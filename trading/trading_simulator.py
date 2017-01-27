@@ -41,10 +41,4 @@ class TradingSimulator(object):
             self.api_method.compile_strategy()
         except:
             raise
-        # compiled_str = compile(str_ategy, '', 'exec')
-        # exec_(compiled_str, self.namespace)
-        # strategy = Strategy()
-        # strategy.algo = algo
-        # strategy.algomas = algomas
-        # foo()
-        # return strategy
+   
