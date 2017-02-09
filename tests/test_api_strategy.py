@@ -1,10 +1,10 @@
 from utils.exceptions import CompileMethodException
 import unittest
 from strategy.api_method import ApiMethod
-from strategy.api_compiler import StrategyCompiler
+from strategy.api_compiler import ApiStrategy
 
 
-class TestApiMethod(unittest.TestCase):
+class TestApiStrategy(unittest.TestCase):
 
     def setUp(self):
         pass
@@ -14,13 +14,13 @@ class TestApiMethod(unittest.TestCase):
     	# mock_compiler.return_value=None
 
         valid_st = 'def valid()\n   return 1'
-        api_method = ApiMethod(str_strategy=valid_st,
+        api_method = ApiStrategy(str_strategy=valid_st,
                                compiler=StrategyCompiler(str_strategy=valid_st))
         (CompileMethodException, api_method.compile_strategy)
 
     def test_invalid_strategy(self):
         invalid_st = 'def invalid() asdas'
-        api_method = ApiMethod(str_strategy=invalid_st,
+        api_method = ApiStrategy(str_strategy=invalid_st,
                                compiler=StrategyCompiler(str_strategy=invalid_st))
         self.assertRaises(CompileMethodException, api_method.compile_strategy)
 

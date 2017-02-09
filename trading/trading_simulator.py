@@ -1,11 +1,13 @@
 from data.symbols import Symbol
 # from strategy.strategy import Strategy
 from strategy.api_compiler import StrategyCompiler
-from strategy.api_method import ApiMethod
+from strategy.api_method import ApiStrategy
 from utils.exceptions import (
     TradingSymbolForbidden
 )
-from six import exec_
+from data.data_portal import DataPortal
+from zip_performance.tracker import PerformanceTracker
+
 
 
 class TradingSimulator(object):
@@ -23,7 +25,8 @@ class TradingSimulator(object):
 
     def __init__(self, str_strategy, symbols, id_strategy):
         self.namespace = {}
-        self.api_method = ApiMethod(str_strategy, StrategyCompiler(str_strategy))
+
+        self.api_method = ApiStrategy(str_strategy, StrategyCompiler(str_strategy))
         self.strategy = self._load_strategy(str_strategy)
         forb_symbols = self._validate_symbols(symbols)
         if forb_symbols:
@@ -41,4 +44,62 @@ class TradingSimulator(object):
             self.api_method.compile_strategy()
         except:
             raise
+
+
+    def simulate(self):
+        '''
+        Calendar con los trading days
+        Mergear los datos historicos de los assets con el calendar
+        recorrer por cada "tick" del calendar
+        
+
+        '''
+        data_portal = DataPortal(ingester=None,pairs_list=['ars_eur', 'eur_dol', 'ars_mex', 'dol_mex'], calendar=None)
+        data_portal.ingest()
+
+        perf_tracker = PerformanceTracker()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    

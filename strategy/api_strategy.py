@@ -1,6 +1,6 @@
 
 
-class ApiMethod(object):
+class ApiStrategy(object):
     '''
     Access point to methods, its supposed to exec and control execution of each injected method
     Well known methods should be loaded automatically and obliged methods must be implemented
@@ -19,8 +19,8 @@ class ApiMethod(object):
 
     '''
     def __init__(self, str_strategy, compiler):
-        self.methods = dict(combine_helper='',
-                            combine_positions='', aggregate_positions='')
+        self.methods = dict(intialize='',
+                            handle_date='')
         self.str_strategy = str_strategy
         self.compiler = compiler
         self.strategy = ''
@@ -41,4 +41,4 @@ class ApiMethod(object):
         
     def run_method(self, method, params):
         method = self.strategy[method]
-        method(params)
+        return method(params)
