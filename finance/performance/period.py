@@ -344,9 +344,16 @@ class PerformancePeriod(object):
                 self.returns = 0.0
 
     def record_order(self, order):
+        import pdb
+        pdb.set_trace()
         if self.keep_orders:
-            self._include_order_in_modified_orders(order)
-
+            try:
+                dt_orders = self.orders_by_modified[order.dt]
+                if order.id in dt_orders:
+                    del dt_orders[order.id]
+            except KeyError:
+                self.orders_by_modified[order.dt] = dt_orders = OrderedDict()
+            dt_orders[order.id] = order
             # to preserve the order of the orders by modified date
             # we delete and add back. (ordered dictionary is sorted by
             # first insertion date).
@@ -354,17 +361,9 @@ class PerformancePeriod(object):
                 del self.orders_by_id[order.id]
             self.orders_by_id[order.id] = order
 
-    def _include_order_in_modified_orders(self, order):
-        try:
-            dt_orders = self.orders_by_modified[order.dt]
-            if order.id in dt_orders:
-                del dt_orders[order.id]
-        except KeyError:
-            self.orders_by_modified[order.dt] = dt_orders = OrderedDict()
-        dt_orders[order.id] = order
-
-
     def handle_execution(self, txn):
+        import pdb
+        pdb.set_trace()
         self.cash_flow += self._calculate_execution_cash_flow(txn)
 
         asset = self.asset_finder.retrieve_asset(txn.sid)
@@ -396,7 +395,8 @@ class PerformancePeriod(object):
         """
         # Check if the multiplier is cached. If it is not, look up the asset
         # and cache the multiplier.
-
+        import pdb
+        pdb.set_trace()
         try:
             multiplier = self._execution_cash_flow_multipliers[txn.sid]
         except KeyError:
