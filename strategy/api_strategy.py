@@ -1,4 +1,4 @@
-
+from data.pair import Pair
 
 class ApiStrategy(object):
     '''
@@ -18,10 +18,9 @@ class ApiStrategy(object):
     strategy: compiled strategy
 
     '''
-    def __init__(self, str_strategy, compiler):
+    def __init__(self,  compiler):
         self.methods = dict(intialize='',
                             handle_date='')
-        self.str_strategy = str_strategy
         self.compiler = compiler
         self.strategy = ''
 
@@ -36,9 +35,25 @@ class ApiStrategy(object):
     def compile_strategy(self):
         try:
             self.strategy = self.compiler.compile()
+            self._handle_data = self.strategy['handle_data']
+            self._initialize = self.strategy['initialize']
         except:
             raise
         
-    def run_method(self, method, params):
+    def run_method(self, method, context, data):
+        import pdb
+        pdb.set_trace()
         method = self.strategy[method]
-        return method(params)
+        return method(context, data)
+
+    def initialize(self, context):
+        self._initialize(context)
+
+    def handle_data(self, data):
+        import pdb
+        pdb.set_trace()
+        self._handle_data(self, 'asdadsasdasdasdas')
+
+    def schedule_functions(self):
+        pass
+

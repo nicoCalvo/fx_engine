@@ -23,3 +23,17 @@ class InvalidCapitalBaseException(Exception):
     def __init__(self):
         super(CompileMethodException, self).__init__(self.base_msg)
 
+
+class InvalidPairValueError(Exception):
+
+    base_msg = 'Allowed values must be "OpenBid", "OpenAsk", "HighBid" or "HighAsk". Received: '
+
+    def __init__(self, msg):
+        super(CompileMethodException, self).__init__(self.base_msg + msg)
+
+class InvalidPairError(Exception):
+
+    base_msg = 'Requested pair is not included in the simulation: '
+
+    def __init__(self, msg):
+        super(CompileMethodException, self).__init__(self.base_msg + msg)

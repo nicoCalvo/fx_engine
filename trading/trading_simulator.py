@@ -1,7 +1,8 @@
-from data.symbols import Symbol
+from data.pair import Pair
 # from strategy.strategy import Strategy
 from strategy.api_compiler import StrategyCompiler
 from strategy.api_method import ApiStrategy
+from strategy.dto_strategy import DTOStrategy
 from utils.exceptions import (
     TradingSymbolForbidden,
     InvalidCapitalBase
@@ -24,17 +25,18 @@ class TradingSimulator(object):
     id_strategy: External ID assigned for this strategy
     '''
 
-    def __init__(self, str_strategy, symbols, id_strategy, capital_base):
+    def __init__(self, dto_strategy):
         self.namespace = {}
 
-        self.api_method = ApiStrategy(str_strategy, StrategyCompiler(str_strategy))
-        self.strategy = self._load_strategy(str_strategy)
-        forb_symbols = self._validate_symbols(symbols)
-        if forb_symbols:
-            raise TradingSymbolForbidden(forb_symbols)
-        self.symbols = [Symbol(x) for x in symbols]
+        self.api_method = ApiStrategy(StrategyCompiler(dto_strategy.str_strategy))
+
+        self.strategy = self._load_strategy()
+        forb_fx_pairs = self._validate_symbols(dto_strategy.fx_pairs)
+        if forb_fx_pairs:
+            raise TradingSymbolForbidden(forb_fx_pairs)
+        self.pairs = [Pair(x) for x in dto_strategy.fx_pairs]
         self.trading_environment = TradingEnvironment()
-        self.capital_base = self._validate_initial_capital(capital_base)
+        self.capital_base = self._validate_initial_capital(dto_strategy.capital_base)
 
         '''
             Consider creation of StrategyEnvironment that holds trading controls and account_controls
@@ -59,10 +61,10 @@ class TradingSimulator(object):
         )
 
 
-    def _validate_symbols(self, symbols):
-        return[x for x in symbols if not Symbol.is_allowed(x)]
+    def _validate_pairs(self, pairs):
+        return[x for x in pairs if not Pair.is_allowed(x)]
 
-    def _load_strategy(self, str_ategy):
+    def _load_strategy(self):
         # TODO: Define methods to be loaded such as handle_data,initialize inside str_ategy
         # FIXME: under exec_ method, determine the need and purpose of passing
         # a namespace as third param: exec_(comp_str, namespace)
@@ -91,47 +93,30 @@ class TradingSimulator(object):
         data_portal.ingest()
 
         perf_tracker = PerformanceTracker()
-        sim_params = self.create_simulation_parameters
+        sim_params = self._create_simulation_parameters()
+
         '''
         crear el Blotter con el VolumeShareSlippage
 
         '''
         # If an env has been provided, pop it
     
+   
+        # TOINVESTIGATE: Difference btw data_frequency and emission_rate
 
-    def create_simulation_parameters(year=2006, start=None, end=None,
-                                     capital_base=float("1.0e5"),
-                                     num_days=None,
-                                     data_frequency='daily',
-                                     emission_rate='daily',
-                                     trading_calendar=None):
-
-        if not trading_calendar:
-            trading_calendar = get_calendar("NYSE")
-
-        if start is None:
-            start = pd.Timestamp("{0}-01-01".format(year), tz='UTC')
-        elif type(start) == datetime:
-            start = pd.Timestamp(start)
-
-        if end is None:
-            if num_days:
-                start_index = trading_calendar.all_sessions.searchsorted(start)
-                end = trading_calendar.all_sessions[start_index + num_days - 1]
-            else:
-                end = pd.Timestamp("{0}-12-31".format(year), tz='UTC')
-        elif type(end) == datetime:
-            end = pd.Timestamp(end)
+        "CONTINUE IN run_algo.py INIT METHOD TO DECIDE THE CONSTRUCTION OF THE TRADING_SIMULATOR  \
+         FIND DIFFERENCES BETWEEN TradingEnvironment and DataPortal, does it worth it?"
+         #Context: this stupid variable is the environment to execute the algo
+         # in zipline refers to self for TradingAlgorithm
 
         sim_params = SimulationParameters(
             start_session=start,
             end_session=end,
             capital_base=capital_base,
             data_frequency=data_frequency,
-            emission_rate=emission_rate,
-            trading_calendar=trading_calendar,
+            emission_rate=emission_rate, # WTF?? This is not used EVERRR
+            trading_calendar=self.trading_calendar,
         )
-
         return sim_params
            
 
