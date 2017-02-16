@@ -1,5 +1,5 @@
 from six import exec_
-from utils.exceptions import CompileMethodException
+from .exceptions import CompileMethodException
 
 
 class StrategyCompiler(object):

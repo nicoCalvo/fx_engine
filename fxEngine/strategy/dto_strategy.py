@@ -13,5 +13,4 @@ class DTOStrategy(object):
         self.end_date = pd.Timestamp(kwargs['end_date'])
         self.frequency = kwargs['frequency']
         self.fx_pairs = kwargs['pairs_list']
-        self.simulation_type = kwargs['simulation_type']
         self.str_strategy = kwargs['script']

@@ -1,4 +1,4 @@
-from portfolio.portfolio import Portfolio
+from ..data.portfolio import Portfolio
 from data.data_portal import DataPortal
 
 class TradingEnvironment(object):

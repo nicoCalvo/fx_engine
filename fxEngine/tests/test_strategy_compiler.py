@@ -1,6 +1,6 @@
-from utils.exceptions import CompileMethodException
+from fxEngine.strategy.exceptions import CompileMethodException
 import unittest
-from strategy.api_compiler import StrategyCompiler
+from fxEngine.strategy.strategy_compiler import StrategyCompiler
 
 
 class TestStrategyCompiler(unittest.TestCase):

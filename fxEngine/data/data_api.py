@@ -1,5 +1,5 @@
 from collections import namedtuple
-from utils.exceptions import InvalidPairValueError
+from .exceptions import InvalidPairValueError
 
 
 class DataAPI(object):
@@ -25,7 +25,7 @@ class DataAPI(object):
         self.data_pairs = ''
         self.allowed_values = ['OpenBid', 'OpenAsk', 'HighBid', 'HighAsk']
 
-    def current(self, pairs, values='', ticks):
+    def current(self, pairs, values, ticks):
         """
         Returns the current value of the given pairs for the given fields
         at the current simulation time.  Current values are the as-traded price
