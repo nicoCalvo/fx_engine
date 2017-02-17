@@ -32,13 +32,12 @@ class DataPortal(Observable):
         self.data_bundle = self.ingester.ingest()
 
     def get_pairs_names_list(self):
-        return self.data_bundle.cols.names
+        return self.data_bundle.cols.names[1:]
 
     def get_slice(self, pair, ticks):
         return self.data_bundle.cols[pair][-ticks:]
 
     def _add_new_tick(self, tick):
-        
         '''
         put the tick into data_bundle and check size, apply LIFO to the queue
 
@@ -54,4 +53,4 @@ class DataPortal(Observable):
 
     def get_current_tick(self):
         self.current_tick = self.ingester.current_tick()
-        return self.current_tick
+        return self.current_tick[1:] # Jumps timestamp

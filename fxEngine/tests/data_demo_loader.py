@@ -2,12 +2,20 @@ import datetime
 import numpy as np
 import bcolz
 from fxEngine.data.pair import Pair
-
+import random
 
 DEMO_PAIRS = ['DATE', 'EURUSD', 'USDYUA', 'ARSMEX', 'BOLYEN',
               'USUARS', 'CUBUSD', 'USDURU', 'YENEUR']
 
-PAIRS = [Pair(x) for x in DEMO_PAIRS]
+PAIRS = [Pair(x) for x in DEMO_PAIRS[1:]]
+
+TICK_EXAMPLE = {u'tick': {u'AssetType': u'FxSpot', u'Uic': 16, u'LastUpdated':
+                          u'2017-02-12T09:32:09.967000Z', u'Quote': {u'Bid': 7.43505, u'Mid': 7.435365, u'ErrorCode':
+                                                                     u'None', u'Amount': 100000, u'DelayedByMinutes': 0, u'Ask': 7.43568, u'RFQState': u'None',
+                                                                     u'PriceTypeAsk': u'Indicative', u'PriceTypeBid': u'Indicative'}},
+                u'ohba': []
+                # u'timestamp': datetime.datetime.today()
+                }
 
 
 class DemoLoader(object):
@@ -33,10 +41,20 @@ class DemoLoader(object):
         return [date_list, eur_dol, dol_yua, ars_mex, bol_yen, uru_ars,
                 cub_dol, dol_uru, yen_eur]
 
-
     def current_tick(self):
         tick = []
         tick.append(datetime.datetime.today())
         for pair in DEMO_PAIRS[1:]:
-            tick.append(np.random.rand(1, 4))
+            tick.append(self._set_random_tick_values())
+        return tick
+
+    def _set_random_tick_values(self):
+        tick = TICK_EXAMPLE
+        bid = random.uniform(5.5, 8.9)
+        ask = random.uniform(bid - 2, bid)
+        tick['tick']['Quote']['Bid'] = bid
+        tick['tick']['Quote']['Mid'] = (bid + ask) / 2
+        tick['tick']['Quote']['Ask'] = ask
+        tick['tick']['Quote']['Amount'] = random.uniform(8000, 10000)
+        # tick['datetime'] = datetime.datetime.today()
         return tick

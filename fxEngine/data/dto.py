@@ -1,3 +1,12 @@
+'''
+DTO: Data Transfer Object
+
+Each data structured is wrapped into methodless class
+in order to comply OOP design rules
+
+nameduples are the DTO built-in class for such purpose
+'''
+
 from collections import namedtuple
 
 
@@ -6,4 +15,8 @@ Position = namedtuple(
 Portfolio = namedtuple(
     'Portfolio', 'capital_used starting_cash portfolio_value pnl returns cash positions start_date positions_value')
 
-ValidPairs = namedtuple('ValidPairs','EURUSD, ARSMEX, YENUSD, USDEUR')
+
+# TODO: Define how valid pairs will be available (each data feed could
+# have their owns)
+
+ValidPairs = namedtuple('ValidPairs', 'EURUSD, ARSMEX, YENUSD, USDEUR')

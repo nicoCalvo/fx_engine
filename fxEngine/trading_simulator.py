@@ -12,6 +12,7 @@ from simulation_manager import SimulationManager
 from fxEngine.clock.clock import FactoryClock
 from fxEngine.data.data_api import DataAPI
 
+
 class TradingSimulator(object):
     '''
     TradingSimulator is the main class that defines, creates and
@@ -26,12 +27,12 @@ class TradingSimulator(object):
     '''
 
     def __init__(self, dto_strategy):
-        self._validate_pairs(dto_strategy.fx_pairs)
+        self.traded_pairs = dto_strategy.traded_pairs
+        self._validate_pairs()
         self._validate_initial_capital(dto_strategy.capital_base)
         self.api_strategy = ApiStrategy(
             StrategyCompiler(dto_strategy.str_strategy), dto_strategy)
         self._load_strategy()
-        self.pairs = [Pair(x) for x in dto_strategy.fx_pairs]
 
         '''
             Consider creation of StrategyEnvironment
@@ -40,8 +41,9 @@ class TradingSimulator(object):
 
         '''
 
-    def _validate_pairs(self, pairs):
-        forb_fx_pairs = [x for x in pairs if not Pair.is_allowed(x)]
+    def _validate_pairs(self):
+        forb_fx_pairs = [
+            x for x in self.traded_pairs if not Pair.is_allowed(x)]
         if forb_fx_pairs:
             raise TradingSymbolForbidden(forb_fx_pairs)
 
@@ -62,7 +64,7 @@ class TradingSimulator(object):
         data_portal.register_observer(perf_tracker)
         data_portal.ingest()
         clock = FactoryClock.get_clock(clock_type, data_portal)
-        data_api = DataAPI(data_portal)
+        data_api = DataAPI(data_portal, self.traded_pairs)
         self.api_strategy.data_api = data_api
         '''
         crear el Blotter con el VolumeShareSlippage

@@ -1,5 +1,5 @@
-from collections import namedtuple
-from .exceptions import InvalidPairValueError
+from .exceptions import InvalidPairError
+from .ticker_filter import TickerFilter
 
 
 class DataAPI(object):
@@ -13,7 +13,7 @@ class DataAPI(object):
 
     '''
 
-    def __init__(self, data_portal):
+    def __init__(self, data_portal, traded_pairs):
         '''
         Attributes:
         ==========
@@ -21,16 +21,15 @@ class DataAPI(object):
         data_pairs: The DataFrame/Panel returned from DataPortal
 
         '''
-        self.data_portal = data_portal
-        self.data_pairs = ''
-        self.allowed_values = ['OpenBid', 'OpenAsk', 'HighBid', 'HighAsk']
+        # TODO: Rethink current method with decorator instead. Fucking crap
 
-    def current(self, pairs, values, ticks):
+        self.__data_portal = data_portal
+        self.__traded_pairs = traded_pairs
+
+    def current(self, pairs=[], values=[]):
         """
-        Returns the current value of the given pairs for the given fields
-        at the current simulation time.  Current values are the as-traded price
-        and are usually not adjusted for events like splits or dividends (see
-        notes for more information).
+        Returns the current value of the given pairs for the given values
+
 
         Parameters
         ----------
@@ -41,7 +40,7 @@ class DataAPI(object):
         Returns
         -------
         current_value : Scalar, pandas Series, or pandas DataFrame.
-            See notes below.
+                        See notes below.
 
         Notes
         -----
@@ -64,27 +63,28 @@ class DataAPI(object):
         last market close instead.
 
         """
-        if not self.__are_valid_pairs(pairs):
-            raise InvalidPairError(str(pairs))
-        self.data_portal.get_current_slice(pairs, ticks)
-        if values:
-            self.__get_pair_value(values)
+        pairs = pairs if isinstance(pairs, list) else [pairs]
+        values = values if isinstance(values, list) else [values]
+        tick = self._DataAPI__data_portal.get_current_tick()
+        ticker_filter = TickerFilter(
+            tick, pairs, values, self._DataAPI__traded_pairs)
 
-        return self.data_pairs
+        import pdb
+        pdb.set_trace()
+        ticker = ticker_filter.filter()
+        '''
+        TODO: Format this into panda or array or single value
+        '''
+
+        return tick
 
     def __get_pair_value(self, values):
         if values not in self.allowed_values:
-            raise InvalidPairValueError(str(values))
+            raise InvalidPairError(str(values))
         # TODO see how to get only the requested columns of data
-        self.data_pairs = self.data_pairs[value]
+        self.data_pairs = self._DataAPI__traded_pairs[value]
 
     def history(self, pairs, ticks):
         if self.__are_valid_pairs(pairs):
             pair_names = self.__get_pairs_names()
             self.data_pairs = self.data_portal.get_slice(pair_names, ticks)
-
-    def __get_pairs_names(self):
-        return [x for x.name in pairs]
-
-    def __are_valid_pairs(self, pairs):
-        return self.__get_pairs_names() in self.data_portal.get_pairs_names_list()

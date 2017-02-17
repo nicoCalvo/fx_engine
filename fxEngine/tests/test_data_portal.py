@@ -15,7 +15,7 @@ class TestDataPortal(unittest.TestCase):
         dp.ingest()
         tick = dp.get_current_tick()
         self.assertEquals(len(tick), len(PAIRS))
-        self.assertIs(tick[0].__class__, datetime.datetime)
+        self.assertIs(dp.current_tick[0].__class__, datetime.datetime)
 
     def test_valid_new_tick(self):
         dp = DataPortal(ingester=DemoLoader(), pairs=PAIRS)

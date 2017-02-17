@@ -9,8 +9,6 @@ class StrategyScheduler(object):
         self._has_new_month = strategy.get('before_new_month', '')
 
     def before_new_day(self):
-    	import pdb
-    	pdb.set_trace()
         if self._has_new_day:
             self.strategy.before_new_day()
 
