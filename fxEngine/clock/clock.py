@@ -2,6 +2,7 @@
 
 class EternalClock(object):
     WEEKEND_DAYS = 2
+    DATE_POS = 0
 
     def __init__(self, data_portal):
         self.last_day = 0
@@ -15,10 +16,14 @@ class EternalClock(object):
         has_tick = False
         if self.data_portal.has_new_tick():
             self.last_date = self.new_date
-            self.new_date = self.data_portal.get_current_tick()[0]
+            self.new_date = self.data_portal.get_current_tick()[self.DATE_POS]
             has_tick = True
         return has_tick
 
+    def get_first_tick(self):
+        tick = self.data_portal.get_current_tick()
+        self.new_date = tick[self.DATE_POS]
+    
     def is_new_day(self):
         is_new = False
         if self.last_day != self.new_date.day:
@@ -50,3 +55,16 @@ class LimitedClock(EternalClock):
             return False
         self.__ticks += 1
         return self.data_portal.has_new_tick()
+
+
+class FactoryClock(object):
+    clocks = dict(eternal=EternalClock, limited=LimitedClock)
+
+    @classmethod
+    def get_clock(cls, type, data_portal):
+        clock_instance = ''
+        try:
+            clock_instance = cls.clocks[type]
+        except:
+            clock_instance = cls.clocks['eternal']
+        return clock_instance(data_portal)

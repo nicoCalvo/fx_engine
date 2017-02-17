@@ -1,6 +1,7 @@
 from .strategy_context import StrategyContext
 from .strategy_sheduler import StrategyScheduler
 from ..data.dto import Portfolio
+
 '''
 Definir API de datos "data"
 Definir API funciones matematicas Inverse price etc
@@ -32,11 +33,12 @@ class ApiStrategy(object):
     '''
 
     def __init__(self, compiler, dto_strategy):
-        self.compiler = compiler
+        self._compiler = compiler
         self.dto_strategy = dto_strategy
         self.strategy = ''
         self.context = StrategyContext(self._get_base_portfolio())
-        self.scheduler = ''
+        self._scheduler = None
+        self.data_api = ''
 
     def _get_base_portfolio(self):
         return Portfolio(capital_used=0,
@@ -48,22 +50,27 @@ class ApiStrategy(object):
 
     def compile_strategy(self):
         try:
-            self.strategy = self.compiler.compile()
+            self.strategy = self._compiler.compile()
             self._handle_data = self.strategy['handle_data']
             self._initialize = self.strategy['initialize']
-            self.schedule_scheduled_functions()
         except:
             raise
 
     def initialize(self):
+        f = open('out2.log', 'w')
+        f.write('asdasd')
+        f.close()
         self._initialize(self.context)
 
-    def handle_data(self, data):
-        self._handle_data(self, data)
+    def handle_data(self):
+        import pdb
+        pdb.set_trace()
+        self._handle_data(self.context, self.data_api)
 
     def set_portfolio(self, portfolio):
         self.context.portfolio = portfolio
 
-    def schedule_scheduled_functions(self):
-        #self.scheduler = StrategyScheduler(self.strategy)
-        pass
+    def get_scheduler(self):
+        if not self._scheduler:
+            self._scheduler = StrategyScheduler(self.strategy)
+        return self._scheduler

@@ -8,10 +8,28 @@ class SimulationManager(object):
         self.scheduler = scheduler
 
     def simulate(self):
+    	'''
+		las funciones scheduled reciben como parametro el nombre de la funcion a ejecutar y los parametros
+		El scheduler le pasa a cada funcion a ejecutar el self.strategy asi ejecuta la funcion que se 
+		pasa como nombre del parametro, y los parametros
+		SOY DIOS
+		
+    	'''
+
+    	# @@ VER COMO HAGO CON EL TICK DE DATOS
+    	# @@ VER QUE ES EL OBJECTO data PASADO A handle_data 
+    	import pdb
+    	pdb.set_trace()
+        self.strategy.initialize()
+        self.clock.get_first_tick()
+        self.strategy.handle_data()
         while self.clock.has_new_tick():
             self._run_scheduled_functions()
+            self.strategy.handle_data()
 
-    def run_scheduled_functions(self):
+    def _run_scheduled_functions(self):
+    	import pdb
+    	pdb.set_trace()
         if self.clock.is_new_day():
             self.scheduler.before_new_day()
         if self.clock.is_new_week():

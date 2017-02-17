@@ -1,15 +1,16 @@
 from fxEngine.data.pair import Pair
-from strategy.strategy_compiler import StrategyCompiler
-from strategy.api_strategy import ApiStrategy
-from utils.exceptions import (
+from fxEngine.strategy.strategy_compiler import StrategyCompiler
+from fxEngine.strategy.api_strategy import ApiStrategy
+from fxEngine.utils.exceptions import (
     TradingSymbolForbidden,
     InvalidCapitalBase
 )
 from data.data_portal import DataPortal
-from performance.performance_tracker import PerformanceTracker
-from tests.data_demo_loader import DemoLoader
+from fxEngine.performance.performance_tracker import PerformanceTracker
+from fxEngine.tests.data_demo_loader import DemoLoader
 from simulation_manager import SimulationManager
-
+from fxEngine.clock.clock import FactoryClock
+from fxEngine.data.data_api import DataAPI
 
 class TradingSimulator(object):
     '''
@@ -38,6 +39,7 @@ class TradingSimulator(object):
             and records all the vars plus namespace and calendar
 
         '''
+
     def _validate_pairs(self, pairs):
         forb_fx_pairs = [x for x in pairs if not Pair.is_allowed(x)]
         if forb_fx_pairs:
@@ -53,12 +55,15 @@ class TradingSimulator(object):
         if capital_base <= 0:
             raise InvalidCapitalBase()
 
-    def simulate(self, clock):
+    def run_simulation(self, clock_type):
+
         perf_tracker = PerformanceTracker(strategy=self.api_strategy)
-        data_portal = DataPortal(ingester=DemoLoader(), pairs_list=self.pairs,
-                                 observers=perf_tracker)
+        data_portal = DataPortal(ingester=DemoLoader(), pairs=self.pairs)
+        data_portal.register_observer(perf_tracker)
         data_portal.ingest()
-        _clock = clock(data_portal)
+        clock = FactoryClock.get_clock(clock_type, data_portal)
+        data_api = DataAPI(data_portal)
+        self.api_strategy.data_api = data_api
         '''
         crear el Blotter con el VolumeShareSlippage
 
@@ -74,10 +79,13 @@ class TradingSimulator(object):
         # dividir el strategy compiler y si existe alguna funcion a ser ejecutada cada dia o al cierre de
         # cada dia, pasarsela a un manager e instanciarlo
 
-        self.api_strategy.initialize()
-        while self.clock.has_new_tick():
-            self.api_strategy.handle_data()
-        simulation_manager = SimulationManager(_clock, self.api_strategy)
+        # self.api_strategy.initialize()
+        # while self.clock.has_new_tick():
+        #     self.api_strategy.handle_data()
+
+        scheduler = self.api_strategy.get_scheduler()
+        simulation_manager = SimulationManager(
+            clock, self.api_strategy, scheduler)
         simulation_manager.simulate()
         # "CONTINUE IN run_algo.py INIT METHOD TO DECIDE THE CONSTRUCTION OF THE TRADING_SIMULATOR  \
         #  FIND DIFFERENCES BETWEEN TradingEnvironment and DataPortal, does it worth it?"

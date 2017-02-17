@@ -1,8 +1,8 @@
 
 
 class Observable(object):
-    def __init__(self, observers):
-        self.observers = observers
+    def __init__(self):
+        self.observers = []
 
     def register_observer(self, observer):
         if observer not in self.observers:
@@ -21,12 +21,13 @@ class Observable(object):
 
 class DataPortal(Observable):
 
-    def __init__(self, ingester=None, pairs_names_list=None, observers=[]):
-        super(DataPortal, self).__init__(observers)
-        self.pairs_names = pairs_names_list
+    def __init__(self, ingester=None, pairs=None):
+        super(DataPortal, self).__init__()
+        self.pairs_names = [x.name for x in pairs]
         self.ingester = ingester
         self.data_bundle = ''
-  
+        self.current_tick = ''
+
     def ingest(self):
         self.data_bundle = self.ingester.ingest()
 
@@ -37,7 +38,7 @@ class DataPortal(Observable):
         return self.data_bundle.cols[pair][-ticks:]
 
     def _add_new_tick(self, tick):
-        self.notify_observers()
+        
         '''
         put the tick into data_bundle and check size, apply LIFO to the queue
 
@@ -45,11 +46,12 @@ class DataPortal(Observable):
         pass
 
     def has_new_tick(self):
-        tick = self.ingester.get_tick()
-        if tick:
-            self._add_new_tick(tick)
+        self.get_current_tick()
+        if self.current_tick:
+            self.notify_observers()
             return True
         return False
 
     def get_current_tick(self):
-        return self.data_bundle[-1]
+        self.current_tick = self.ingester.current_tick()
+        return self.current_tick

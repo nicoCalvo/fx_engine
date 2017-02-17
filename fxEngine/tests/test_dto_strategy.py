@@ -1,6 +1,6 @@
 import unittest
-
 from fxEngine.strategy.dto_strategy import DTOStrategy
+
 
 class TestDTOStrategy(unittest.TestCase):
 
