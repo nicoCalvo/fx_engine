@@ -4,19 +4,23 @@ import pandas as pd
 class TickerAdapter(object):
     UNSET_VALUE = -1
 
-    def __init__(self, ticker, pairs, values):
+    def __init__(self):
+        self.ticker = ''
+        self.pairs = ''
+        self.values = ''
+
+    # TODO convert numbers to decimal or something to avoid losing data
+    def get_ticker(self, ticker, pairs, values):
         self.ticker = ticker
         self.pairs = pairs
         self.values = values
-
-    # TODO convert numbers to decimal or something to avoid loosing data
-    def get_ticker(self):
         '''
         This method follows zipline's guidelines described in its "current" implementation
         only that instead of wildcard returns, every different parse return is splitted in
         its own method  
         http://www.zipline.io/appendix.html?highlight=current#zipline.protocol.BarData.current
         '''
+
         if len(self.pairs) == 1:
             return self._parse_single_pair()
         return self._parse_many_pairs()
@@ -28,11 +32,13 @@ class TickerAdapter(object):
         '''
         self.ticker = self.ticker[0]
         self.ticker = [x for x in self.ticker if x > self.UNSET_VALUE]
+
         if len(self.values) > 1:
             return self._single_pair_many_values()
         return self._single_pair_single_value()
 
     def _parse_many_pairs(self):
+
         if len(self.values) > 1:
             return self._many_pairs_many_values()
         return self._many_pairs_single_value()
@@ -55,12 +61,7 @@ class TickerAdapter(object):
         '''
         # TODO: Check if this poor workaround fits and if amount is always int
         # IMPLICIT CASTING SEEMS TO SOLVE ANY CAST ISSUE. BUT IT CAN FAIL
-        value = self.ticker[0]
-        # if value.index('.'):
-        #     value = int(value)
-        # else:
-        #     value = float(value)
-        return value
+        return self.ticker[0]
 
     def _single_pair_many_values(self):
         '''
@@ -75,7 +76,11 @@ class TickerAdapter(object):
         The columns are the requested fields,
         filled with the scalar values for each asset for each field
         '''
-        return pd.DataFrame(self.ticker, index=self.pairs, columns=self.values)
+        _ticker = []
+        for ticker in self.ticker:
+            _ticker.append(
+                filter(lambda a: a != self.UNSET_VALUE, ticker))
+        return pd.DataFrame(_ticker, index=self.pairs, columns=self.values)
 
     def _many_pairs_single_value(self):
         '''

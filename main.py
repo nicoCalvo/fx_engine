@@ -22,6 +22,6 @@ crear json con DTOStrategy
 
 '''
 
-str_ategy = RandomStrategy.get_strategy('atakama_api')
-trading_simulator = TradingSimulator(str_ategy)
+dto_strategy = RandomStrategy.get_strategy('current')
+trading_simulator = TradingSimulator(dto_strategy)
 trading_simulator.run_simulation('Eternal')

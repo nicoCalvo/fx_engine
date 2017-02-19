@@ -1,6 +1,0 @@
-[-1, -1, -1, -1]
-[1]
-['Bid', 'Ask', 'Mid', 'Amount']
-Bid
-{u'ErrorCode': u'None', u'Amount': 583050, u'DelayedByMinutes': 0, u'PriceTypeAsk': u'Indicative', u'Ask': 5.313241950259032, u'RFQState': u'None', u'Bid': 5.79500205355534, u'PriceTypeBid': u'Indicative', u'Mid': 5.554122001907186}
-[-1, 5.313241950259032, -1, -1]

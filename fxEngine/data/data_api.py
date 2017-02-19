@@ -27,6 +27,8 @@ class DataAPI(object):
         # TODO: Rethink current method with decorator instead. Fucking crap
         self.__data_portal = data_portal
         self._traded_pairs = traded_pairs
+        self.__ticker_filter = TickerFilter(traded_pairs)
+        self.__ticker_adapter = TickerAdapter()
 
     def current(self, pairs='', values=''):
         """
@@ -66,42 +68,32 @@ class DataAPI(object):
 
         """
         try:
-            pairs = pairs if isinstance(pairs, list) else [pairs]
-            values = values if isinstance(values, list) else [values]
-            pairs = pairs if pairs else [pairs]
-            values = values if values else [values]
+            pairs = self.__set_pairs(pairs)
+            values = self.__set_values(values)
             tick = self.__data_portal.get_current_tick()
-            # ticker_filter = TickerFilter(tick=tick, filtered_pairs=pairs,
-            #                              filtered_values=values,
-            #                              traded_pairs=self.__traded_pairs)
-            ticker_filter = TickerFilter()
-            ticker_filter._tick = tick
-            # ticker_filter = TickerFilter(filtered_pairs=pairs,
-            #                              filtered_values=values,
-            #                              traded_pairs=self.__traded_pairs,
-            #                              tick=json.dumps(tick))
-            ticker_filter.filtered_pairs = pairs
-            ticker_filter.filtered_values = values
-            ticker_filter.traded_pairs = self._traded_pairs
-            ticker = ticker_filter.filter()
-            # ticker_adapter = TickerAdapter(ticker, pairs, values)
-            # ticker = ticker_adapter.get_ticker()
-        except Exception, e:
+            tick = self.__ticker_filter.filter(tick, pairs, values)
+            tick = self.__ticker_adapter.get_ticker(tick, pairs, values)
+        except:
             pass
-            # f = open('bosta.log', 'w')
-            # f.write(str(e))
-            # f.close()
-        '''
-        TODO: Format this into panda or array or single value
-        '''
-        return ticker
-        # return ticker
+        return tick
+
+    def __set_pairs(self, pairs):
+        if isinstance(pairs, list):
+            return pairs
+        if not pairs:
+            return self._traded_pairs
+        return [pairs]
+
+    def __set_values(self, values):
+        if isinstance(values, list):
+            return values
+        if not values:
+            return self.__ticker_filter._allowed_values
+        return [values]
 
     def _validate_values(self, values):
         if values not in self._traded_pairs:
             raise InvalidPairError(str(values))
-        # TODO see how to get only the requested columns of data
-        #self.data_pairs = self._traded_pairs[value]
 
     def history(self, pairs, ticks):
         if pairs in self._traded_pairs:

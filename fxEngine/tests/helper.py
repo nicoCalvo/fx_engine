@@ -18,6 +18,10 @@ atakama_api = {"id": "2", "end_date": "2016-10-06", "capital_base": 9999999, "si
                             "script": "from atakama_api.dates import Dates\n\n\ndef initialize(context):\n    context.i = 4\n    context.dates = Dates(['2012-03-04','2012-05-04'])\n\ndef handle_data(context, data):\n    context.i += 1\n    context.dates.write_dates()\n\n"}
 
 
+current_data_test = {"id": "9", "end_date": "2016-10-06", "capital_base": 9999999, "simulation_type": "backtest", "frequency": "daily", "pairs_list": ["USDEUR", "ARSMEX"], "start_date": "2015-10-03",
+                            "script": "from atakama_api.dates import Dates\n\n\ndef initialize(context):\n    context.i = 4\n    context.dates = Dates(['2012-03-04','2012-05-04'])\n\ndef handle_data(context, data):\n    f = open('hola.log', 'a')\n    f.write(str(data.current()))\n    f.write(str(data.current('USDEUR')))\n    f.write(str(data.current('','ask')))\n    f.write(str(data.current('',['ask', 'bid'])))\n    context.i += 1\n    context.dates.write_dates()\n\n"}
+
+
 
 
 
@@ -28,11 +32,12 @@ STRATEGY_INVALID_PAIR = DTOStrategy(**str_strategy_invalid_pair)
 
 WRITETOFILE = DTOStrategy(**write_to_file)
 ATAKAMA_API = DTOStrategy(**atakama_api)
+CURRRENT_DATA = DTOStrategy(**current_data_test)
 
 
 
 class RandomStrategy(object):
-	strategies = dict(tofile=WRITETOFILE, atakama_api=ATAKAMA_API)
+	strategies = dict(tofile=WRITETOFILE, atakama_api=ATAKAMA_API, current =CURRRENT_DATA)
 
 	@classmethod
 	def get_strategy(cls, name):
