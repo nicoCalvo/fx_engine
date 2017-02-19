@@ -58,13 +58,16 @@ class TradingSimulator(object):
             raise InvalidCapitalBase()
 
     def run_simulation(self, clock_type):
-
         perf_tracker = PerformanceTracker(strategy=self.api_strategy)
-        data_portal = DataPortal(ingester=DemoLoader(), pairs=self.pairs)
+        data_portal = DataPortal(
+            ingester=DemoLoader(), pairs=self.traded_pairs)
         data_portal.register_observer(perf_tracker)
         data_portal.ingest()
         clock = FactoryClock.get_clock(clock_type, data_portal)
-        data_api = DataAPI(data_portal, self.traded_pairs)
+        data_api = DataAPI(data_portal=data_portal,
+                           traded_pairs=self.traded_pairs)
+        import pdb
+        pdb.set_trace()
         self.api_strategy.data_api = data_api
         '''
         crear el Blotter con el VolumeShareSlippage

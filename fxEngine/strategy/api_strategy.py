@@ -57,9 +57,6 @@ class ApiStrategy(object):
             raise
 
     def initialize(self):
-        f = open('out2.log', 'w')
-        f.write('asdasd')
-        f.close()
         self._initialize(self.context)
 
     def handle_data(self):

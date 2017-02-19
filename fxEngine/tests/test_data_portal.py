@@ -1,5 +1,5 @@
 from fxEngine.data.data_portal import DataPortal
-from fxEngine.tests.data_demo_loader import DemoLoader, PAIRS
+from fxEngine.tests.data_demo_loader import DemoLoader, PAIR_NAMES
 import unittest
 from mock import Mock
 import datetime
@@ -11,14 +11,14 @@ class TestDataPortal(unittest.TestCase):
         pass
 
     def test_valid_ingest(self):
-        dp = DataPortal(ingester=DemoLoader(), pairs=PAIRS)
+        dp = DataPortal(ingester=DemoLoader(), pairs=PAIR_NAMES)
         dp.ingest()
         tick = dp.get_current_tick()
-        self.assertEquals(len(tick), len(PAIRS))
+        self.assertEquals(len(tick), len(PAIR_NAMES))
         self.assertIs(dp.current_tick[0].__class__, datetime.datetime)
 
     def test_valid_new_tick(self):
-        dp = DataPortal(ingester=DemoLoader(), pairs=PAIRS)
+        dp = DataPortal(ingester=DemoLoader(), pairs=PAIR_NAMES)
         dp.ingest()
         self.assertTrue(dp.has_new_tick())
 
@@ -30,10 +30,9 @@ class TestDataPortal(unittest.TestCase):
         self.assertEquals(mock_observer.base_value, mock_observer.new_value)
 
     def test_valid_pair_names(self):
-        dp = DataPortal(ingester=DemoLoader(), pairs=PAIRS)
+        dp = DataPortal(ingester=DemoLoader(), pairs=PAIR_NAMES)
         dp.ingest()
-        names = [x.name for x in PAIRS]
-        self.assertEquals(names, dp.get_pairs_names_list())
+        self.assertEquals(PAIR_NAMES, dp.get_pairs_names_list())
 
 
 class MockObserver(Mock):

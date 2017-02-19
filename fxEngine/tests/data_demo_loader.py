@@ -7,6 +7,7 @@ import random
 DEMO_PAIRS = ['DATE', 'EURUSD', 'USDYUA', 'ARSMEX', 'BOLYEN',
               'USUARS', 'CUBUSD', 'USDURU', 'YENEUR']
 
+PAIR_NAMES = DEMO_PAIRS[1:]
 PAIRS = [Pair(x) for x in DEMO_PAIRS[1:]]
 
 TICK_EXAMPLE = {u'tick': {u'AssetType': u'FxSpot', u'Uic': 16, u'LastUpdated':
@@ -55,6 +56,6 @@ class DemoLoader(object):
         tick['tick']['Quote']['Bid'] = bid
         tick['tick']['Quote']['Mid'] = (bid + ask) / 2
         tick['tick']['Quote']['Ask'] = ask
-        tick['tick']['Quote']['Amount'] = random.uniform(8000, 10000)
+        tick['tick']['Quote']['Amount'] = random.randint(10000, 800000)
         # tick['datetime'] = datetime.datetime.today()
         return tick

@@ -18,8 +18,6 @@ class SimulationManager(object):
 
     	# @@ VER COMO HAGO CON EL TICK DE DATOS
     	# @@ VER QUE ES EL OBJECTO data PASADO A handle_data 
-    	import pdb
-    	pdb.set_trace()
         self.strategy.initialize()
         self.clock.get_first_tick()
         self.strategy.handle_data()
@@ -27,9 +25,11 @@ class SimulationManager(object):
             self._run_scheduled_functions()
             self.strategy.handle_data()
 
+        self.strategy.tear_down()
+
+
     def _run_scheduled_functions(self):
-    	import pdb
-    	pdb.set_trace()
+
         if self.clock.is_new_day():
             self.scheduler.before_new_day()
         if self.clock.is_new_week():

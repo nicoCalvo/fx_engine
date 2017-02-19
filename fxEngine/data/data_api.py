@@ -1,5 +1,7 @@
 from .exceptions import InvalidPairError
 from .ticker_filter import TickerFilter
+from .ticker_adapter import TickerAdapter
+import json
 
 
 class DataAPI(object):
@@ -17,74 +19,91 @@ class DataAPI(object):
         '''
         Attributes:
         ==========
-        data_portal: Instance of DataPortal containing the required data for the simulation
+        data_portal: Instance of DataPortal
+        containing the required data for the simulation
         data_pairs: The DataFrame/Panel returned from DataPortal
 
         '''
         # TODO: Rethink current method with decorator instead. Fucking crap
-
         self.__data_portal = data_portal
-        self.__traded_pairs = traded_pairs
+        self._traded_pairs = traded_pairs
 
-    def current(self, pairs=[], values=[]):
+    def current(self, pairs='', values=''):
         """
-        Returns the current value of the given pairs for the given values
+            Returns the current value of the given pairs for the given values
 
 
-        Parameters
-        ----------
-        pairs : List of Pair instances
-        values = List with allowed_values or empty for a full return
-        ticks: int stating how many ticks back are requesting data
+            Parameters
+            ----------
+            pairs : List of Pair instances
+            values = List with allowed_values or empty for a full return
+            ticks: int stating how many ticks back are requesting data
 
-        Returns
-        -------
-        current_value : Scalar, pandas Series, or pandas DataFrame.
-                        See notes below.
+            Returns
+            -------
+            current_value : Scalar, pandas Series, or pandas DataFrame.
+                            See notes below.
 
-        Notes
-        -----
-        If a single asset and a single field are passed in, a scalar float
-        value is returned.
+            Notes
+            -----
+            If a single asset and a single field are passed in, a scalar float
+            value is returned.
 
-        If a single asset and a list of fields are passed in, a pandas Series
-        is returned whose indices are the fields, and whose values are scalar
-        values for this asset for each field.
+            If a single asset and a list of fields are passed in, a pandas Series
+            is returned whose indices are the fields, and whose values are scalar
+            values for this asset for each field.
 
-        If a list of assets and a single field are passed in, a pandas Series
-        is returned whose indices are the assets, and whose values are scalar
-        values for each asset for the given field.
+            If a list of assets and a single field are passed in, a pandas Series
+            is returned whose indices are the assets, and whose values are scalar
+            values for each asset for the given field.
 
-        If a list of assets and a list of fields are passed in, a pandas
-        DataFrame is returned, indexed by asset.  The columns are the requested
-        fields, filled with the scalar values for each asset for each field.
+            If a list of assets and a list of fields are passed in, a pandas
+            DataFrame is returned, indexed by asset.  The columns are the requested
+            fields, filled with the scalar values for each asset for each field.
 
-        If the current simulation time is not a valid market time, we use the
-        last market close instead.
+            If the current simulation time is not a valid market time, we use the
+            last market close instead.
 
         """
-        pairs = pairs if isinstance(pairs, list) else [pairs]
-        values = values if isinstance(values, list) else [values]
-        tick = self._DataAPI__data_portal.get_current_tick()
-        ticker_filter = TickerFilter(
-            tick, pairs, values, self._DataAPI__traded_pairs)
-
-        import pdb
-        pdb.set_trace()
-        ticker = ticker_filter.filter()
+        try:
+            pairs = pairs if isinstance(pairs, list) else [pairs]
+            values = values if isinstance(values, list) else [values]
+            pairs = pairs if pairs else [pairs]
+            values = values if values else [values]
+            tick = self.__data_portal.get_current_tick()
+            # ticker_filter = TickerFilter(tick=tick, filtered_pairs=pairs,
+            #                              filtered_values=values,
+            #                              traded_pairs=self.__traded_pairs)
+            ticker_filter = TickerFilter()
+            ticker_filter._tick = tick
+            # ticker_filter = TickerFilter(filtered_pairs=pairs,
+            #                              filtered_values=values,
+            #                              traded_pairs=self.__traded_pairs,
+            #                              tick=json.dumps(tick))
+            ticker_filter.filtered_pairs = pairs
+            ticker_filter.filtered_values = values
+            ticker_filter.traded_pairs = self._traded_pairs
+            ticker = ticker_filter.filter()
+            # ticker_adapter = TickerAdapter(ticker, pairs, values)
+            # ticker = ticker_adapter.get_ticker()
+        except Exception, e:
+            pass
+            # f = open('bosta.log', 'w')
+            # f.write(str(e))
+            # f.close()
         '''
         TODO: Format this into panda or array or single value
         '''
+        return ticker
+        # return ticker
 
-        return tick
-
-    def __get_pair_value(self, values):
-        if values not in self.allowed_values:
+    def _validate_values(self, values):
+        if values not in self._traded_pairs:
             raise InvalidPairError(str(values))
         # TODO see how to get only the requested columns of data
-        self.data_pairs = self._DataAPI__traded_pairs[value]
+        #self.data_pairs = self._traded_pairs[value]
 
     def history(self, pairs, ticks):
-        if self.__are_valid_pairs(pairs):
-            pair_names = self.__get_pairs_names()
-            self.data_pairs = self.data_portal.get_slice(pair_names, ticks)
+        if pairs in self._traded_pairs:
+            self.data_pairs = self.data_portal.get_slice(
+                self._traded_pairs, ticks)

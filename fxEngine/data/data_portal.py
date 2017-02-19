@@ -23,7 +23,7 @@ class DataPortal(Observable):
 
     def __init__(self, ingester=None, pairs=None):
         super(DataPortal, self).__init__()
-        self.pairs_names = [x.name for x in pairs]
+        self._pairs_names = pairs
         self.ingester = ingester
         self.data_bundle = ''
         self.current_tick = ''
@@ -35,11 +35,13 @@ class DataPortal(Observable):
         return self.data_bundle.cols.names[1:]
 
     def get_slice(self, pair, ticks):
+        #TODO: validate requested pair in self._pairs_names
         return self.data_bundle.cols[pair][-ticks:]
 
     def _add_new_tick(self, tick):
         '''
-        put the tick into data_bundle and check size, apply LIFO to the queue
+        put the tick into data_bundle and check size
+        applying LIFO to the queue
 
         '''
         pass
@@ -54,3 +56,6 @@ class DataPortal(Observable):
     def get_current_tick(self):
         self.current_tick = self.ingester.current_tick()
         return self.current_tick[1:] # Jumps timestamp
+    
+    def get_tick_date(self):
+        return self.current_tick[0]
