@@ -25,7 +25,7 @@ class SimulationManager(object):
             self._run_scheduled_functions()
             self.strategy.handle_data()
 
-        self.strategy.tear_down()
+        #self.strategy.tear_down()
 
 
     def _run_scheduled_functions(self):

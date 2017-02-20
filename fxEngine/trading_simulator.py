@@ -66,11 +66,8 @@ class TradingSimulator(object):
         clock = FactoryClock.get_clock(clock_type, data_portal)
         data_api = DataAPI(data_portal=data_portal,
                            traded_pairs=self.traded_pairs)
-        import pdb
-        pdb.set_trace()
         self.api_strategy.data_api = data_api
         '''
-        crear el Blotter con el VolumeShareSlippage
 
         '''
         # If an env has been provided, pop it

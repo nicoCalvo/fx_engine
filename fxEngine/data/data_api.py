@@ -91,9 +91,6 @@ class DataAPI(object):
             return self.__ticker_filter._allowed_values
         return [values]
 
-    def _validate_values(self, values):
-        if values not in self._traded_pairs:
-            raise InvalidPairError(str(values))
 
     def history(self, pairs, ticks):
         if pairs in self._traded_pairs:

@@ -60,8 +60,6 @@ class ApiStrategy(object):
         self._initialize(self.context)
 
     def handle_data(self):
-        import pdb
-        pdb.set_trace()
         self._handle_data(self.context, self.data_api)
 
     def set_portfolio(self, portfolio):

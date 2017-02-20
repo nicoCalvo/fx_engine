@@ -51,10 +51,10 @@ class LimitedClock(EternalClock):
     def __init__(self, data_portal):
         super(LimitedClock, self).__init__(data_portal)
         self.__ticks = 0
-        self.__limit_ticks = 10000
+        self.__tick_limits = 10000
 
     def has_new_tick(self):
-        if self.__ticks == self.__limit_ticks:
+        if self.__ticks == self.__tick_limits:
             return False
         self.__ticks += 1
         return self.data_portal.has_new_tick()
