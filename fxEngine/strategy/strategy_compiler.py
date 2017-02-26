@@ -9,8 +9,6 @@ class StrategyCompiler(object):
         self.namespace = namespace
 
     def compile(self):
-        import pdb
-        pdb.set_trace()
         try:
             compiled_str = compile(self.str_strategy, '<string>', 'exec')
             exec_(compiled_str, self.namespace)

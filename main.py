@@ -24,4 +24,4 @@ crear json con DTOStrategy
 
 dto_strategy = RandomStrategy.get_strategy('simpleai')
 trading_simulator = TradingSimulator(dto_strategy)
-trading_simulator.run_simulation('Eternal')
+trading_simulator.run_simulation('limited')

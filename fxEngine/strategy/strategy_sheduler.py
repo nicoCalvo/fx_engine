@@ -37,8 +37,6 @@ class StrategyScheduler(object):
         there's a scheduled function and run it
         '''
         if clock.is_new_day() and self._has_new_day:
-            import pdb
-            pdb.set_trace()
             self.api_strategy.before_new_day()
         if clock.is_new_week() and self._has_new_week:
             self.api_strategy.before_new_week()
