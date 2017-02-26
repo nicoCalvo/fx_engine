@@ -9,15 +9,9 @@ class SimulationManager(object):
 
     def simulate(self):
     	'''
-		las funciones scheduled reciben como parametro el nombre de la funcion a ejecutar y los parametros
-		El scheduler le pasa a cada funcion a ejecutar el self.strategy asi ejecuta la funcion que se 
-		pasa como nombre del parametro, y los parametros
-		SOY DIOS
-		
+		TODO: Define if any "teardown" method will be need to perform some
+		closing calculations and metrics
     	'''
-
-    	# @@ VER COMO HAGO CON EL TICK DE DATOS
-    	# @@ VER QUE ES EL OBJECTO data PASADO A handle_data 
         self.strategy.initialize()
         self.clock.get_first_tick()
         self.strategy.handle_data()
@@ -29,10 +23,5 @@ class SimulationManager(object):
 
 
     def _run_scheduled_functions(self):
+    	self.scheduler.run_scheduled(self.clock)
 
-        if self.clock.is_new_day():
-            self.scheduler.before_new_day()
-        if self.clock.is_new_week():
-            self.scheduler.before_new_week()
-        if self.clock.is_new_month():
-            self.scheduler.before_new_month()

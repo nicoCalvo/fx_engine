@@ -20,6 +20,7 @@ TICK_EXAMPLE = {u'tick': {u'AssetType': u'FxSpot', u'Uic': 16, u'LastUpdated':
 
 
 class DemoLoader(object):
+    tick_counter = 0
 
     def ingest(self):
         LEN = 50
@@ -43,8 +44,14 @@ class DemoLoader(object):
                 cub_dol, dol_uru, yen_eur]
 
     def current_tick(self):
+        self.tick_counter += 1
         tick = []
-        tick.append(datetime.datetime.today())
+        if self.tick_counter > 10:
+            self.tick_counter = 0
+            date = datetime.datetime.now() + datetime.timedelta(days=1)
+            tick.append(date)
+        else:
+            tick.append(datetime.datetime.today())
         for pair in DEMO_PAIRS[1:]:
             tick.append(self._set_random_tick_values())
         return tick

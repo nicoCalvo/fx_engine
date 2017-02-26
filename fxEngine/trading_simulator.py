@@ -30,6 +30,7 @@ class TradingSimulator(object):
         self.traded_pairs = dto_strategy.traded_pairs
         self._validate_pairs()
         self._validate_initial_capital(dto_strategy.capital_base)
+        
         self.api_strategy = ApiStrategy(
             StrategyCompiler(dto_strategy.str_strategy), dto_strategy)
         self._load_strategy()
@@ -84,7 +85,6 @@ class TradingSimulator(object):
         # self.api_strategy.initialize()
         # while self.clock.has_new_tick():
         #     self.api_strategy.handle_data()
-
         scheduler = self.api_strategy.get_scheduler()
         simulation_manager = SimulationManager(
             clock, self.api_strategy, scheduler)

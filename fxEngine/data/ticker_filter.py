@@ -60,10 +60,7 @@ class TickerFilter(object):
         return pair_values
 
     def filter(self, tick, pairs, values):
-        f = open('xxx.log', 'w')
-        f.write(str(len(pairs)))
-        f.write(str(pairs))
-        f.close()
+        
         self.filtered_values = [x.title() for x in values]
         self.filtered_pairs = pairs
         self._tick = tick

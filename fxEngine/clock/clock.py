@@ -1,6 +1,23 @@
+class Observable(object):
+    def __init__(self):
+        self.observers = []
+
+    def register_observer(self, observer):
+        if observer not in self.observers:
+            self.observers.append(observer)
+
+    def unregister_observer(self, observer):
+        self.observers.remove(observer)
+
+    def unregister_all(self):
+        if self.observers:
+            del self.observers[:]
+
+    def notify_observers(self):
+        [x.update() for x in self.observers]
 
 
-class EternalClock(object):
+class EternalClock(Observable):
     WEEKEND_DAYS = 2
 
     def __init__(self, data_portal):
@@ -28,7 +45,7 @@ class EternalClock(object):
 
     def is_new_day(self):
         is_new = False
-        
+
         if self.last_day != self.new_date.day:
             self.last_day = self.new_date.day
             is_new = True

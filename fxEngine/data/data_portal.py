@@ -38,7 +38,7 @@ class DataPortal(Observable):
         #TODO: validate requested pair in self._pairs_names
         return self.data_bundle.cols[pair][-ticks:]
 
-    def _add_new_tick(self, tick):
+    def _add_new_history_bar(self, tick):
         '''
         put the tick into data_bundle and check size
         applying LIFO to the queue
