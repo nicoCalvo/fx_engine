@@ -74,13 +74,8 @@ class LimitedClock(EternalClock):
         if self.__ticks == self.__tick_limits:
             return False
         self.__ticks += 1
-        has_tick = False
-        if self.data_portal.has_new_tick():
-            self.last_date = self.new_date
-            self.new_date = self.data_portal.get_tick_date()
-            has_tick = True
-        return has_tick
-
+        return super(LimitedClock, self).has_new_tick()
+     
 
 class FactoryClock(object):
     clocks = dict(eternal=EternalClock, limited=LimitedClock)
