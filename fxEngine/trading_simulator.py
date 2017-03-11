@@ -11,12 +11,14 @@ from fxEngine.tests.data_demo_loader import DemoLoader
 from simulation_manager import SimulationManager
 from fxEngine.clock.clock import FactoryClock
 from fxEngine.data.data_api import DataAPI
+from atakama_api.orders import OrderManager
+from atakama_api.dates import Date
 
 
 class TradingSimulator(object):
     '''
     TradingSimulator is the main class that defines, creates and
-    customize the context for an strategy to be run ( Algorithm alike in zipline)
+    customize the context for a strategy to be run
 
     Parameters:
     ==========
@@ -30,19 +32,12 @@ class TradingSimulator(object):
         self.traded_pairs = dto_strategy.traded_pairs
         self._validate_pairs()
         self._validate_initial_capital(dto_strategy.capital_base)
-        
         self.api_strategy = ApiStrategy(
-            StrategyCompiler(dto_strategy.str_strategy), dto_strategy)
+            StrategyCompiler(dto_strategy), dto_strategy)
         self._load_strategy()
 
-        '''
-            Consider creation of StrategyEnvironment
-            that holds trading controls and account_controls
-            and records all the vars plus namespace and calendar
-
-        '''
-
     def _validate_pairs(self):
+        # FIXME: Cant be repeated pairs
         forb_fx_pairs = [
             x for x in self.traded_pairs if not Pair.is_allowed(x)]
         if forb_fx_pairs:
@@ -60,36 +55,21 @@ class TradingSimulator(object):
 
     def run_simulation(self, clock_type):
         perf_tracker = PerformanceTracker(strategy=self.api_strategy)
+
         data_portal = DataPortal(
             ingester=DemoLoader(), pairs=self.traded_pairs)
         data_portal.register_observer(perf_tracker)
-        data_portal.ingest()
         clock = FactoryClock.get_clock(clock_type, data_portal)
+
+        OrderManager.STRATEGY = self.api_strategy.dto_strategy
+        OrderManager.CLOCK = clock
+        Date.CLOCK = clock
+        data_portal.ingest()
         data_api = DataAPI(data_portal=data_portal,
                            traded_pairs=self.traded_pairs)
         self.api_strategy.data_api = data_api
-        '''
 
-        '''
-        # If an env has been provided, pop it
-
-        # TOINVESTIGATE: Difference btw data_frequency and emission_rate
-        # TOINVESTIGATE: Identify somehow a new date and trigger methods to be
-        # executed on new date
-
-        # El clock determina una fecha nueva
-        # Al tener fecha nueva se dispara un manager que las ejecute
-        # dividir el strategy compiler y si existe alguna funcion a ser ejecutada cada dia o al cierre de
-        # cada dia, pasarsela a un manager e instanciarlo
-
-        # self.api_strategy.initialize()
-        # while self.clock.has_new_tick():
-        #     self.api_strategy.handle_data()
         scheduler = self.api_strategy.get_scheduler()
         simulation_manager = SimulationManager(
             clock, self.api_strategy, scheduler)
         simulation_manager.simulate()
-        # "CONTINUE IN run_algo.py INIT METHOD TO DECIDE THE CONSTRUCTION OF THE TRADING_SIMULATOR  \
-        #  FIND DIFFERENCES BETWEEN TradingEnvironment and DataPortal, does it worth it?"
-        # Context: this stupid variable is the environment to execute the algo
-        # in zipline refers to self for TradingAlgorithm

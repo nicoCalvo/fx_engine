@@ -75,7 +75,7 @@ class LimitedClock(EternalClock):
             return False
         self.__ticks += 1
         return super(LimitedClock, self).has_new_tick()
-     
+
 
 class FactoryClock(object):
     clocks = dict(eternal=EternalClock, limited=LimitedClock)

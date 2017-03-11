@@ -1,12 +1,15 @@
+import datetime
 
 
-class Dates(object):
+class Date(object):
+    CLOCK = ''
+    ALGO = ''
 
-    def __init__(self, dates):
-        self.dates = dates
-        
+    def __init__(self):
+        pass
 
-    def write_dates(self):
-        f = open('dates.log', 'w')
-        f.write(str(self.dates))
-        f.close()
+    def get_date(self):
+        return self.CLOCK.new_date.strftime('%Y-%m-%d %H:%M:%S')
+
+    def add_days(self, days):
+        return self.CLOCK.new_date - datetime.timedelta(days=days)

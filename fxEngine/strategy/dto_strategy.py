@@ -14,3 +14,4 @@ class DTOStrategy(object):
         self.frequency = kwargs['frequency']
         self.traded_pairs = kwargs['pairs_list']
         self.str_strategy = kwargs['script']
+        self.simulation_mode = kwargs['mode']

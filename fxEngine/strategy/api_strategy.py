@@ -8,7 +8,6 @@ Definir API funciones matematicas Inverse price etc
 Definir API portfolio
 
 '''
-from atakama_api.scheduler import DailyScheduler
 
 
 class ApiStrategy(object):
@@ -71,14 +70,19 @@ class ApiStrategy(object):
     def set_portfolio(self, portfolio):
         self.context.portfolio = portfolio
 
+    def get_portfolio(self):
+        return self.context.portfolio
+
     def get_scheduler(self):
         return StrategyScheduler(self)
 
-    def before_new_day(self):
+    def on_new_day(self):
         self._before_new_day(self.context, self.data_api)
 
-    def before_new_week(self):
+    def on_new_week(self):
         self._before_new_week(self.context, self.data_api)
 
-    def before_new_month(self):
+    def on_new_month(self):
         self._before_new_month(self.context, self.data_api)
+
+   

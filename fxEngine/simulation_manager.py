@@ -8,10 +8,11 @@ class SimulationManager(object):
         self.scheduler = scheduler
 
     def simulate(self):
-    	'''
-		TODO: Define if any "teardown" method will be need to perform some
-		closing calculations and metrics
-    	'''
+        '''
+            TODO: Define if any "teardown" method will be need
+            to perform some
+            closing calculations and metrics
+        '''
         self.strategy.initialize()
         self.clock.get_first_tick()
         self.strategy.handle_data()
@@ -19,9 +20,7 @@ class SimulationManager(object):
             self._run_scheduled_functions()
             self.strategy.handle_data()
 
-        #self.strategy.tear_down()
-
+        # self.strategy.tear_down()
 
     def _run_scheduled_functions(self):
-    	self.scheduler.run_scheduled(self.clock)
-
+        self.scheduler.run_scheduled(self.clock)

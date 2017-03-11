@@ -1,0 +1,3 @@
+{"logger":"from atakama_api.utils import LocalLogger\nlog = LocalLogger()",
+ "ordermanager":"\nfrom atakama_api.orders import OrderManager\norder = OrderManager()",
+ "simulationdate": "\nfrom atakama_api.dates import Date\ndate= Date()"}

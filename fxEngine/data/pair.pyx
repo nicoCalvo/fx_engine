@@ -1,5 +1,5 @@
-from .dto import ValidPairs
-
+#from .dto import ValidPairs
+import cython
 ''' TICK EXAMPLE
 
 {u'RefreshRate': 100, u'ContextId': u'asd', u'State': u'Active', u'InactivityTimeout': 60, 
@@ -9,28 +9,24 @@ u'None', u'Amount': 100000, u'DelayedByMinutes': 0, u'Ask': 7.43568, u'RFQState'
 u'PriceTypeAsk': u'Indicative', u'PriceTypeBid': u'Indicative'}}}
 '''
 
-class Pair(object):
+
+# class Pair(object):
+cdef class Pair:
     '''
     Pair is DTO class containing data related to a Pair such as Pip, name, etc
 
     '''
-    __slots__ = ('name', 'start_date', 'end_date', 'pip', 'bid','mid', 'ask','amount')
+    cdef readonly object name
+    cdef readonly object start_date
+    cdef readonly object end_date
+    cdef readonly object pip
 
     def __init__(self, name):
+        '''
+
+        '''
         self.name = name
         self.start_date = ''
         self.end_date = ''
         self.pip = ''
-        self.bid = ''
-        self.mid = ''
-        self.ask = ''
-        self.amount = ''
 
-    @classmethod
-    def is_allowed(self, name):
-        try:
-            getattr(ValidPairs, name)
-        except:
-            return False
-        else:
-            return True
