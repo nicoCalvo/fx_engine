@@ -1,4 +1,4 @@
-#from .dto import ValidPairs
+from .dto import ValidPairs
 import cython
 ''' TICK EXAMPLE
 
@@ -30,3 +30,6 @@ cdef class Pair:
         self.end_date = ''
         self.pip = ''
 
+    @classmethod    
+    def is_allowed(self, pair):
+        return True

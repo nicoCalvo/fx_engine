@@ -28,18 +28,17 @@ STRATEGY_VALID_PAIR = DTOStrategy(**str_strategy_valid_pair)
 STRATEGY_INVALID_PAIR = DTOStrategy(**str_strategy_invalid_pair)
 
 
-WRITETOFILE = DTOStrategy(**write_to_file)
-ATAKAMA_API = DTOStrategy(**atakama_api)
 CURRRENT_DATA = DTOStrategy(**current_data_test)
 SCHED_TEST = DTOStrategy(**scheduler_test)
 SIMPLEAI_SCHED_TEST = DTOStrategy(**scheduler_plus_simpleai_test)
 
 
-class RandomStrategy(object):
-    strategies = dict(tofile=WRITETOFILE, atakama_api=ATAKAMA_API,
-                      current=CURRRENT_DATA, sched=SCHED_TEST,
+class StrategyFactory(object):
+    strategies = dict(invalid_pair=STRATEGY_INVALID_PAIR,
+                      invalid_script=INVALID_STRATEGY,
+                      current=CURRRENT_DATA, scheduled=SCHED_TEST,
                       simpleai=SIMPLEAI_SCHED_TEST)
 
     @classmethod
-    def get_strategy(cls, name):
+    def get(cls, name):
         return cls.strategies[name]

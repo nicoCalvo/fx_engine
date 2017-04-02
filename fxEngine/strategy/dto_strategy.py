@@ -7,7 +7,7 @@ class DTOStrategy(object):
         '''
         Provides an single interface for strategy Data Transfer Object
         '''
-        self.capital_base = kwargs['capital_base']
+        self.capital_base = int(kwargs['capital_base'])
         self.id = kwargs['id']
         self.start_date = pd.Timestamp(kwargs['start_date'])
         self.end_date = pd.Timestamp(kwargs['end_date'])

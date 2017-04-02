@@ -13,7 +13,7 @@ class InvalidCapitalBase(Exception):
     base_msg = 'Initial capital must be > 0 '
 
     def __init__(self):
-        super(InvalidCapitalBaseException, self).__init__(self.base_msg)
+        super(InvalidCapitalBase, self).__init__(self.base_msg)
 
 
 

@@ -25,11 +25,11 @@ class StrategyScheduler(object):
 
     def _set_scheduled_functions(self):
         self.api_strategy._before_new_day = self.api_strategy.strategy.get(
-            'on_new_day', '')
+            'before_new_day', '')
         self.api_strategy._before_new_week = self.api_strategy.strategy.get(
-            'on_new_week', '')
+            'before_new_week', '')
         self.api_strategy._before_new_month = self.api_strategy.strategy.get(
-            'on_new_month', '')
+            'before_new_month', '')
 
     def run_scheduled(self, clock):
         '''
