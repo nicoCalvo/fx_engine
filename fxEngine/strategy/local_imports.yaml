@@ -1,0 +1,11 @@
+logger: |
+    from atakama_api.utils import LocalLogger
+    log = LocalLogger()
+       
+ordermanager: |
+    from atakama_api.orders import OrderManager
+    order = OrderManager() 
+
+simulationdate : |
+    from atakama_api.dates import Date
+    date= Date()

@@ -1,6 +1,6 @@
 from string import Template
-import json
-
+# import json
+import yaml
 
 class TemplateStrategy(object):
 
@@ -9,12 +9,12 @@ class TemplateStrategy(object):
         self.simulation_type = simulation_type
 
     def build_strategy(self):
-        template = Template('$logger $ordermanager $simulationdate $strategy')
+        template = Template('$logger$ordermanager$simulationdate$strategy')
         return template.substitute(self.__get_imports())
 
     def __get_imports(self):
-        fname = './fxEngine/strategy/' + self.simulation_type + '_imports.json'
+        fname = './fxEngine/strategy/' + self.simulation_type + '_imports.yaml'
         with open(fname) as file:
-            imports = json.load(file)
+            imports = yaml.load(file)
         imports['strategy'] = self.strategy
         return imports
