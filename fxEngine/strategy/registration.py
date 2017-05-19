@@ -17,7 +17,7 @@ class StrategyRegistration(object):
 
     def publish_strategy(self):
         channel = self.conn.channel()
-        message = json.dumps(self.strategy.to_json())
+        message = self.strategy.to_json()
         channel.basic_publish(exchange='E_register_strategy',
                               routing_key='',
                               body=message)

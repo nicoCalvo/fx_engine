@@ -4,8 +4,8 @@ import os
 
 class MbConnector(object):
     __instance = ''
-    host = os.environ.get('RABBITHOST', 'localhost')
-    port = os.environ.get('RABBITPORT', 5672)
+    host = os.environ.get('RABBIT_HOST', 'localhost')
+    port = os.environ.get('RABBIT_PORT', 5672)
 
     @classmethod
     def get_connection(self):

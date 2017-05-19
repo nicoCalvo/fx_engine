@@ -1,6 +1,6 @@
 logger: |
-    from atakama_api.utils import LocalLogger
-    log = LocalLogger()
+    from atakama_api.utils import RealLogger
+    log = RealLogger()
        
 ordermanager: |
     from atakama_api.orders import OrderManager

@@ -15,7 +15,15 @@
 from fxEngine.trading_simulator import TradingSimulator
 from fxEngine.tests.helper import RandomStrategy
 
-
+import pdb
+pdb.set_trace()
 dto_strategy = RandomStrategy.get_strategy('current')
+
+'''
+Attach to rabbit Q listening for incoming strategies,
+get payload and instantiate new TradingSimulator and then run it
+
+'''
 trading_simulator = TradingSimulator(dto_strategy)
 trading_simulator.run_simulation('limited')
+

@@ -1,3 +1,5 @@
+import pyximport
+pyximport.install()
 from fxEngine.data.pair import Pair
 from fxEngine.strategy.strategy_compiler import StrategyCompiler
 from fxEngine.strategy.api_strategy import ApiStrategy
@@ -7,12 +9,14 @@ from fxEngine.utils.exceptions import (
 )
 from data.data_portal import DataPortal
 from fxEngine.performance.performance_tracker import PerformanceTracker
+from fxEngine.strategy.registration import StrategyRegistration
 from fxEngine.tests.data_demo_loader import DemoLoader
 from simulation_manager import SimulationManager
 from fxEngine.clock.clock import FactoryClock
 from fxEngine.data.data_api import DataAPI
 from atakama_api.orders import OrderManager
 from atakama_api.dates import Date
+from atakama_api.utils import RealLogger
 
 
 class TradingSimulator(object):
@@ -54,17 +58,14 @@ class TradingSimulator(object):
             raise InvalidCapitalBase()
 
     def run_simulation(self, clock_type):
-        perf_tracker = PerformanceTracker(strategy=self.api_strategy)
-
-        data_portal = DataPortal(
-            ingester=DemoLoader(), pairs=self.traded_pairs)
-        data_portal.register_observer(perf_tracker)
+        self.__register_strategy()
+        data_portal = self._prepare_data_portal()
         clock = FactoryClock.get_clock(clock_type, data_portal)
 
         OrderManager.STRATEGY = self.api_strategy.dto_strategy
         OrderManager.CLOCK = clock
         Date.CLOCK = clock
-        data_portal.ingest()
+        RealLogger.STRATEGY_ID = self.api_strategy.dto_strategy.id
         data_api = DataAPI(data_portal=data_portal,
                            traded_pairs=self.traded_pairs)
         self.api_strategy.data_api = data_api
@@ -73,3 +74,16 @@ class TradingSimulator(object):
         simulation_manager = SimulationManager(
             clock, self.api_strategy, scheduler)
         simulation_manager.simulate()
+
+    def _prepare_data_portal(self):
+        perf_tracker = PerformanceTracker(strategy=self.api_strategy)
+
+        data_portal = DataPortal(
+            ingester=DemoLoader(), pairs=self.traded_pairs)
+        data_portal.register_observer(perf_tracker)
+        data_portal.ingest()
+        return data_portal
+
+    def __register_strategy(self):
+        st_reg = StrategyRegistration(self.api_strategy.dto_strategy)
+        st_reg.publish_strategy()
