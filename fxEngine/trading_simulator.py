@@ -61,11 +61,17 @@ class TradingSimulator(object):
         self.__register_strategy()
         data_portal = self._prepare_data_portal()
         clock = FactoryClock.get_clock(clock_type, data_portal)
+        self.api_strategy.set_internal_variables(clock)
+        '''
+        intialize variables with params and check ig already instatiated objects
+        has reference inside the compiled code
+        '''
+        # OrderManager.STRATEGY = self.api_strategy.dto_strategy
+        # OrderManager.CLOCK = clock
+        # Date.CLOCK = clock
 
-        OrderManager.STRATEGY = self.api_strategy.dto_strategy
-        OrderManager.CLOCK = clock
-        Date.CLOCK = clock
-        RealLogger.STRATEGY_ID = self.api_strategy.dto_strategy.id
+        # RealLogger.STRATEGY_ID = self.api_strategy.dto_strategy.id
+        # RealLogger.STRATEGY_ID = self.api_strategy.dto_strategy.id
         data_api = DataAPI(data_portal=data_portal,
                            traded_pairs=self.traded_pairs)
         self.api_strategy.data_api = data_api

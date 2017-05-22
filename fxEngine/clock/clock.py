@@ -37,8 +37,6 @@ class EternalClock(Observable):
         return has_tick
 
     def get_first_tick(self):
-        import pdb
-        pdb.set_trace()
         tick = self.data_portal.get_current_tick()
         self.new_date = self.data_portal.get_tick_date()
         self.last_day = self.new_date.day
@@ -70,7 +68,7 @@ class LimitedClock(EternalClock):
     def __init__(self, data_portal):
         super(LimitedClock, self).__init__(data_portal)
         self.__ticks = 0
-        self.__tick_limits = 10000
+        self.__tick_limits = 10
 
     def has_new_tick(self):
         if self.__ticks == self.__tick_limits:

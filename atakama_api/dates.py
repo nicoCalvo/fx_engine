@@ -2,14 +2,12 @@ import datetime
 
 
 class Date(object):
-    CLOCK = ''
-    ALGO = ''
 
     def __init__(self):
-        pass
+        self.clock = ''
 
     def get_date(self):
-        return self.CLOCK.new_date.strftime('%Y-%m-%d %H:%M:%S')
+        return self.clock.new_date.strftime('%Y-%m-%d %H:%M:%S')
 
     def add_days(self, days):
-        return self.CLOCK.new_date - datetime.timedelta(days=days)
+        return self.clock.new_date - datetime.timedelta(days=days)

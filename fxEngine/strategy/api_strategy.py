@@ -85,4 +85,6 @@ class ApiStrategy(object):
     def on_new_month(self):
         self._before_new_month(self.context, self.data_api)
 
-   
+    def set_internal_variables(self, clock):
+        clock_setter = self.strategy['set_clock']
+        clock_setter(clock, self.dto_strategy.id)

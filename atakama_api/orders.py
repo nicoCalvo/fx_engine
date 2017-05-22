@@ -7,10 +7,10 @@ from fxEngine.order.exceptions import (
 
 
 class OrderManager(object):
-    STRATEGY = ''
-    CLOCK = ''
+    # STRATEGY = ''
+    # CLOCK = ''
 
-    def __init__(self):
+    def __init__(self, _id):
         '''
         This class handles all operations related to orders.
         Using current strategy's portfolio status, the  order manager
@@ -27,7 +27,7 @@ class OrderManager(object):
         order_router: order router client
 
         '''
-        self.order_router = OrderRouter()
+        self.order_router = OrderRouter(_id)
         self.log = open('orders.log', 'w')
 
     def validate_params(function):
@@ -52,6 +52,7 @@ class OrderManager(object):
         orders = self.order_router.get_open_orders()
         return orders
 
+
     def cancel_all_open_orders(self):
         self.perf_tracker.get_portfolio()
         self.order_router.cancel_orders()
@@ -65,6 +66,7 @@ class OrderManager(object):
     def limit_order(self, pair, price, due_date=None):
         due_date = due_date or ''
         self.log.write('LIMIT ORDER: ' + pair.name + '  DATE: ' + due_date)
+        
         self.order_router.limit_order(self.strategy.id, pair, price, due_date)
 
     @validate_params
