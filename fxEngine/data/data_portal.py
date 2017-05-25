@@ -34,9 +34,10 @@ class DataPortal(Observable):
     def get_pairs_names_list(self):
         return self.data_bundle.cols.names[1:]
 
-    def get_slice(self, pair, ticks):
+    def get_slice(self, pairs, ticks):
         #TODO: validate requested pair in self._pairs_names
-        return self.data_bundle.cols[pair][-ticks:]
+        pairs.insert(0,'DATE')
+        return self.data_bundle[pairs][-ticks:]
 
     def _add_new_history_bar(self, tick):
         '''

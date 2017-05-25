@@ -4,11 +4,9 @@ from fxEngine.order.exceptions import (
     InvalidDueDate,
     InvalidPriceOrder
 )
-
+import json
 
 class OrderManager(object):
-    # STRATEGY = ''
-    # CLOCK = ''
 
     def __init__(self, _id):
         '''
@@ -22,13 +20,12 @@ class OrderManager(object):
 
         Attributes:
         ----------
-        STRATEGY: DTOStrategy
-        CLOCK: current simulation clock
         order_router: order router client
 
         '''
         self.order_router = OrderRouter(_id)
-        self.log = open('orders.log', 'w')
+        self._orders = []
+        self._logger = ''
 
     def validate_params(function):
         def validate(*args):
@@ -40,8 +37,8 @@ class OrderManager(object):
             if not isinstance(price, float):
                 raise InvalidPriceOrder(pair)
             today = OrderManager.clock.new_date
-            if due_date <= today:
-                raise InvalidDueDate(due_date)
+            # if due_date <= today:
+            #     raise InvalidDueDate(due_date)
             function(*args)
 
     def get_open_orders(self):
@@ -52,7 +49,6 @@ class OrderManager(object):
         orders = self.order_router.get_open_orders()
         return orders
 
-
     def cancel_all_open_orders(self):
         self.perf_tracker.get_portfolio()
         self.order_router.cancel_orders()
@@ -62,18 +58,23 @@ class OrderManager(object):
             self.order_router.cancel_pair_orders(self.strategy.id, pair.name)
             raise InvalidPairOrder(pair)
 
-    @validate_params
+    #@validate_params
     def limit_order(self, pair, price, due_date=None):
+
         due_date = due_date or ''
-        self.log.write('LIMIT ORDER: ' + pair.name + '  DATE: ' + due_date)
-        
-        self.order_router.limit_order(self.strategy.id, pair, price, due_date)
+        limit_order = dict(type='limit', pair=pair, price=price, due_date=None)
+        self._orders.append(limit_order)
+        # self.log.write('LIMIT ORDER: ' + pair.name + '  DATE: ' + due_date)
+
+        #self.order_router.limit_order(self.strategy.id, pair, price, due_date)
 
     @validate_params
     def stop_order(self, pair, price, due_date=None):
         due_date = due_date or ''
-        self.log.write('STOP ORDER: ' + pair.name + '  DATE: ' + due_date)
-        self.order_router.limit_order(self.strategy.id, pair_name,
-                                      price, due_date)
-
-    
+        stop_order = dict(order)
+        #self.log.write('STOP ORDER: ' + pair.name + '  DATE: ' + due_date)
+        
+    def _publish_orders(self):
+        self._logger.info('ORDERS PLACED: ' + json.dumps(self._orders))
+        self.order_router.publish_orders(self._orders)
+        self._orders = []

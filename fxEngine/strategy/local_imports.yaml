@@ -9,7 +9,4 @@ ordermanager: |
 simulationdate : |
     from atakama_api.dates import Date
     date= Date()
-    def set_clock(clock, _id):
-        date.clock = clock
-        order.strategy_id = _id
-        log.clock = clock
+    

@@ -23,3 +23,9 @@ class InvalidPairError(Exception):
 
     def __init__(self, msg):
         super(InvalidPairError, self).__init__(self.base_msg + msg)
+
+
+class RabbitConnectionError(Exception):
+
+    def __init__(self):
+        super(RabbitConnectionError, self).__init__()

@@ -66,9 +66,8 @@ class ApiStrategy(object):
 
     def handle_data(self):
         self._handle_data(self.context, self.data_api)
-
-    def set_portfolio(self, portfolio):
-        self.context.portfolio = portfolio
+        
+        self.strategy['order']._publish_orders()
 
     def get_portfolio(self):
         return self.context.portfolio
@@ -86,5 +85,6 @@ class ApiStrategy(object):
         self._before_new_month(self.context, self.data_api)
 
     def set_internal_variables(self, clock):
-        clock_setter = self.strategy['set_clock']
-        clock_setter(clock, self.dto_strategy.id)
+        self.strategy['date'].clock = clock
+        self.strategy['log'].clock = clock
+        self.strategy['order']._logger = self.strategy['log']

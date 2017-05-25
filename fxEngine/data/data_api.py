@@ -25,10 +25,10 @@ class DataAPI(object):
 
         '''
         # TODO: Rethink current method with decorator instead. Fucking crap
-        self.__data_portal = data_portal
+        self._data_portal = data_portal
         self._traded_pairs = traded_pairs
-        self.__ticker_filter = TickerFilter(traded_pairs)
-        self.__ticker_adapter = TickerAdapter()
+        self._ticker_filter = TickerFilter(traded_pairs)
+        self._ticker_adapter = TickerAdapter()
 
     def current(self, pairs='', values=''):
         """
@@ -68,31 +68,35 @@ class DataAPI(object):
 
         """
         try:
-            pairs = self.__set_pairs(pairs)
-            values = self.__set_values(values)
-            tick = self.__data_portal.get_current_tick()
-            tick = self.__ticker_filter.filter(tick, pairs, values)
-            tick = self.__ticker_adapter.get_ticker(tick, pairs, values)
+            pairs = self._set_pairs(pairs)
+            values = self._set_values(values)
+            tick = self._data_portal.get_current_tick()
+            tick = self._ticker_filter.filter(tick, pairs, values)
+            tick = self._ticker_adapter.get_ticker(tick, pairs, values)
         except:
             pass
         return tick
 
-    def __set_pairs(self, pairs):
+    def _set_pairs(self, pairs):
         if isinstance(pairs, list):
             return pairs
         if not pairs:
             return self._traded_pairs
         return [pairs]
 
-    def __set_values(self, values):
+    def _set_values(self, values):
         if isinstance(values, list):
             return values
         if not values:
-            return self.__ticker_filter._allowed_values
+            return self._ticker_filter._allowed_values
         return [values]
 
 
     def history(self, pairs, ticks):
-        if pairs in self._traded_pairs:
-            self.data_pairs = self.data_portal.get_slice(
-                self._traded_pairs, ticks)
+        if not pairs:
+            pairs = self._traded_pairs
+        pairs = pairs if isinstance(pairs, list) else [pairs]
+        
+        pairs = [x for x in self._traded_pairs if x in pairs]
+        return self._data_portal.get_slice(pairs, ticks)
+                
