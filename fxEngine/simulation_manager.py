@@ -33,6 +33,9 @@ class SimulationManager(object):
             pass
 
         except Exception, e:
+            print '\n\n\n'
+            print 'se rompio todo: ' + str(e)
+            print '\n\n\n'
             conn = MbConnector.get_connection()
             channel = conn.channel()
             msg = dict(message='RUNTIME ERROR: '+ ' - ' + str(e), simulation_date='1901-01-01')

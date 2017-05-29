@@ -10,14 +10,13 @@ from fxEngine.utils.exceptions import (
 from data.data_portal import DataPortal
 from fxEngine.performance.performance_tracker import PerformanceTracker
 from fxEngine.strategy.registration import StrategyRegistration
-from fxEngine.tests.data_demo_loader import DemoLoader
+from fxEngine.data.mb_data_retriever import DataRetriever
 from simulation_manager import SimulationManager
 from fxEngine.clock.clock import FactoryClock
 from fxEngine.data.data_api import DataAPI
-from atakama_api.orders import OrderManager
-from atakama_api.dates import Date
-from atakama_api.utils import RealLogger
 
+
+from fxEngine.tests.data_demo_loader import DemoLoader
 
 class TradingSimulator(object):
     '''
@@ -66,12 +65,6 @@ class TradingSimulator(object):
         intialize variables with params and check ig already instatiated objects
         has reference inside the compiled code
         '''
-        # OrderManager.STRATEGY = self.api_strategy.dto_strategy
-        # OrderManager.CLOCK = clock
-        # Date.CLOCK = clock
-
-        # RealLogger.STRATEGY_ID = self.api_strategy.dto_strategy.id
-        # RealLogger.STRATEGY_ID = self.api_strategy.dto_strategy.id
         data_api = DataAPI(data_portal=data_portal,
                            traded_pairs=self.traded_pairs)
         self.api_strategy.data_api = data_api
@@ -83,9 +76,12 @@ class TradingSimulator(object):
 
     def _prepare_data_portal(self):
         perf_tracker = PerformanceTracker(strategy=self.api_strategy)
-
+        _id = self.api_strategy.dto_strategy.id
         data_portal = DataPortal(
-            ingester=DemoLoader(), pairs=self.traded_pairs)
+            ingester=DataRetriever(_id), pairs=self.traded_pairs)
+        # data_portal = DataPortal(
+            # ingester=DemoLoader(), pairs=self.traded_pairs)
+
         data_portal.register_observer(perf_tracker)
         data_portal.ingest()
         return data_portal

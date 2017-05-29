@@ -46,12 +46,11 @@ class ApiStrategy(object):
         self._before_new_month = None
 
     def _get_base_portfolio(self):
-        return Portfolio(capital_used=0,
-                         starting_cash=self.dto_strategy.capital_base,
-                         portfolio_value=0, pnl=0, returns=0,
-                         cash=0, positions=[],
-                         start_date=self.dto_strategy.start_date,
-                         positions_value=[])
+        return Portfolio(value=self.dto_strategy.capital_base, returns=0,
+                         return_std=0, beta=0, sharpe=0,std=0,
+                         cumulative_returns=0, positions=[],
+                         max_drawdown=0)
+
 
     def compile_strategy(self):
         try:
@@ -88,3 +87,5 @@ class ApiStrategy(object):
         self.strategy['date'].clock = clock
         self.strategy['log'].clock = clock
         self.strategy['order']._logger = self.strategy['log']
+        self.strategy['order']._context = self.context
+

@@ -36,25 +36,45 @@ class PerformanceTracker(Observer):
         # return Portfolio(9999, 100000, 3456, 0.0, 123, 33345, [Position(
         # 2, 34, 54, 56, 78), Position(2, 34, 54, 56, 78)], '2012-03-04',
         # 42423)
+        channel = self.conn.channel()
         not_message = True
-        max_count = 10
+        max_count = 20
         counter = 0
         while not_message and counter < max_count:
-            (method, properties, body) = self.channel.basic_get(
-                queue=self.queue, no_ack=True)
-            if body:
-                not_message = False
-            else:
+            try:
+                (method, properties, body) = channel.basic_get(
+                    queue=self.queue, no_ack=True)
+                if body:
+                    not_message = False
+                else:
+                    counter += 1
+                    time.sleep(1)
+            except:
+                channel = self.conn.channel()
                 counter += 1
                 time.sleep(1)
+                pass
+
         if not body and counter == max_count:
             self.channel.basic_publish(
                 exchange=self.exchange, routing_key='', body=self.excep_msg)
             raise RabbitConnectionError()
-            '''
-            publish alert!
 
-            '''
-        self.portfolio = json.loads(body)
+        # body = '{"portfolio_value":100000,"cash":8000, "returns": 32342, "positions_value":12334534, "open_positions":[{"pair":"EURUSD", "amount":12000},{"pair":"JPYEUR", "amount":3500}]}'
 
+        portfolio = json.loads(body)
+        positions_list = []
+        for position in portfolio['positions']:
+            positions_list.append(Position(**position))
 
+        return Portfolio(value=portfolio['portfolio_value'],
+                         returns=portfolio['portfolio_return'],
+                         return_std=portfolio['portfolio_returns_std'],
+                         beta=portfolio['portfolio_beta'], std=portfolio[
+                             'portfolio_std'],
+                         sharpe=portfolio['portfolio_sharpe'],
+                         cumulative_returns=portfolio[
+                             'portfolio_cumulative_returns'],
+                         max_drawdown=portfolio['portfolio_max_drawdown'],
+                         positions=positions_list)
+        # self.portfolio = json.loads(body)

@@ -1,4 +1,5 @@
-
+import json
+from datetime import datetime
 
 class Observable(object):
     def __init__(self):
@@ -47,6 +48,7 @@ class DataPortal(Observable):
         '''
         pass
 
+
     def has_new_tick(self):
         self.get_current_tick()
         if self.current_tick:
@@ -55,8 +57,11 @@ class DataPortal(Observable):
         return False
 
     def get_current_tick(self):
-        self.current_tick = self.ingester.current_tick()
-        return self.current_tick[1:] # Jumps timestamp
+        data = json.loads(self.ingester.current_tick())
+        self.current_tick = data['ticker']
+        if data['bar']:
+            self._add_new_history_bar(data['bar'])
+        return self.current_tick # Jumps timestamp
     
     def get_tick_date(self):
-        return self.current_tick[0]
+        return datetime.strptime(self.current_tick[0]['time'], '%Y/%m/%d %H:%M:%S')

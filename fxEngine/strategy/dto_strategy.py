@@ -12,9 +12,9 @@ class DTOStrategy(object):
         self.start_date = pd.Timestamp(kwargs['start_date'])
         self.end_date = pd.Timestamp(kwargs['end_date'])
         self.frequency = kwargs['frequency']
-        self.traded_pairs = kwargs['pairs_list']
+        self.traded_pairs = kwargs['list_symbols']
         self.str_strategy = kwargs['script']
-        self.simulation_mode = kwargs['mode']
+        self.simulation_mode = kwargs['simulation_mode']
         self.broker = kwargs['broker']
         self.data_feed = kwargs['data_feed']
 

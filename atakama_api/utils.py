@@ -28,23 +28,27 @@ class LocalLogger(Logger):
         self.file.close()
 
 
-class RealLogger(Logger):
+class AtakamaLogger(Logger):
     E_ST_LOG = 'E_standard_log'
 
     def __init__(self, _id):
-        self.channel = MbConnector.get_connection().channel()
+        self.conn = MbConnector.get_connection()
         self.strategy_id = _id
 
     def info(self, msg):
         # time.sleep(2)
+        channel = self.conn.channel()
         date = self.clock.new_date.strftime('%Y-%m-%d %H:%M:%S')if isinstance(self.clock.new_date, datetime) else '1901-01-01' #.strftime('%Y-%m-%d %H:%M:%S')
         msg = dict(simulation_date=date, message=msg)
-        self.channel.basic_publish(exchange=self.E_ST_LOG,
-                                   routing_key=str(self.strategy_id),
-                                   body=json.dumps(msg))
-
-    def __del__(self):
-        self.channel.close()
+        try:
+            channel.basic_publish(exchange=self.E_ST_LOG,
+                                       routing_key=str(self.strategy_id),
+                                       body=json.dumps(msg))
+        except Exception, e:
+            print '\n\n\n\n'
+            print 'SE ROMPIOOOO  '+ str(e)
+    # def __del__(self):
+    #     self.channel.close()
 
 
 class MbConnector(object):

@@ -11,9 +11,10 @@ from collections import namedtuple
 
 
 Position = namedtuple(
-    'Position', 'sid amount cost_basis, last_sale_price, last_sale_date')
+    'Position', 'position_id amount date_updated symbol value')
+
 Portfolio = namedtuple(
-    'Portfolio', 'capital_used starting_cash portfolio_value pnl returns cash positions start_date positions_value')
+    'Portfolio', 'value returns return_std beta std sharpe cumulative_returns max_drawdown positions')
 
 
 # TODO: Define how valid pairs will be available (each data feed could

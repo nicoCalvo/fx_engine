@@ -1,7 +1,7 @@
 from six import exec_
 from .exceptions import CompileMethodException
 from fxEngine.strategy.strategy_template import TemplateStrategy
-from atakama_api.utils import MbConnector
+from ..utils.mb_connector import MbConnector
 
 
 class StrategyCompiler(object):

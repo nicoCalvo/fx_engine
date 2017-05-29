@@ -6,6 +6,24 @@ from fxEngine.order.exceptions import (
 )
 import json
 
+
+def validate_params(function):
+        def validate(*args):
+            pair = args[0]
+            price = args[1]
+            # due_date = args[2]
+            if pair in OrderManager.strategy.traded_pairs:
+                self._logger.info('Pair not selected for trading')
+                raise InvalidPairOrder(pair)
+            if not isinstance(price, float):
+                raise InvalidPriceOrder(pair)
+                self._logger.info('Invalid Price order')
+            # today = OrderManager.clock.new_date
+            # if due_date <= today:
+            #     raise InvalidDueDate(due_date)
+            function(*args)
+
+
 class OrderManager(object):
 
     def __init__(self, _id):
@@ -26,20 +44,7 @@ class OrderManager(object):
         self.order_router = OrderRouter(_id)
         self._orders = []
         self._logger = ''
-
-    def validate_params(function):
-        def validate(*args):
-            pair = args[0]
-            price = args[1]
-            due_date = args[2]
-            if pair in OrderManager.strategy.traded_pairs:
-                raise InvalidPairOrder(pair)
-            if not isinstance(price, float):
-                raise InvalidPriceOrder(pair)
-            today = OrderManager.clock.new_date
-            # if due_date <= today:
-            #     raise InvalidDueDate(due_date)
-            function(*args)
+        self._context = ''
 
     def get_open_orders(self):
         '''
@@ -62,19 +67,27 @@ class OrderManager(object):
     def limit_order(self, pair, price, due_date=None):
 
         due_date = due_date or ''
-        limit_order = dict(type='limit', pair=pair, price=price, due_date=None)
+        limit_order = dict(type='limit', pair=pair, price=price)
         self._orders.append(limit_order)
         # self.log.write('LIMIT ORDER: ' + pair.name + '  DATE: ' + due_date)
 
         #self.order_router.limit_order(self.strategy.id, pair, price, due_date)
 
-    @validate_params
+    # @validate_params
     def stop_order(self, pair, price, due_date=None):
         due_date = due_date or ''
         stop_order = dict(order)
         #self.log.write('STOP ORDER: ' + pair.name + '  DATE: ' + due_date)
         
     def _publish_orders(self):
-        self._logger.info('ORDERS PLACED: ' + json.dumps(self._orders))
-        self.order_router.publish_orders(self._orders)
+        cash = self._context.portfolio.value
+        amount = sum([x['price'] if x['type'] == 'limit' else 0 for x in self._orders] )
+
+        if cash > amount:
+            # publish orders
+            if self._orders:
+                self._logger.info('ORDERS PLACED: ' + json.dumps(self._orders))
+        elif amount > 0:
+            self._logger.info('NOT ENOUGH CASH TO TRADE ORDER: ' + str()) 
+        # self.order_router.publish_orders(self._orders)
         self._orders = []

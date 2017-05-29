@@ -67,13 +67,14 @@ class DataAPI(object):
             last market close instead.
 
         """
+
         try:
             pairs = self._set_pairs(pairs)
             values = self._set_values(values)
-            tick = self._data_portal.get_current_tick()
+            tick = self._data_portal.current_tick
             tick = self._ticker_filter.filter(tick, pairs, values)
             tick = self._ticker_adapter.get_ticker(tick, pairs, values)
-        except:
+        except Exception, e:
             pass
         return tick
 

@@ -40,12 +40,15 @@ class DemoLoader(object):
         cub_dol = np.random.rand(_len, 4)
         dol_uru = np.random.rand(_len, 4)
         yen_eur = np.random.rand(_len, 4)
+
         return [date_list, eur_dol, dol_yua, ars_mex, bol_yen, uru_ars,
                 cub_dol, dol_uru, yen_eur]
 
     def current_tick(self):
         self.tick_counter += 1
         tick = []
+        import pdb
+        pdb.set_trace()
         if self.tick_counter > 10:
             self.tick_counter = 0
             date = datetime.datetime.now() + datetime.timedelta(days=1)
