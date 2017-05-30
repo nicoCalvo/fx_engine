@@ -18,4 +18,5 @@ class StrategyContext(object):
 
         '''
         self.portfolio = portfolio
+        self._open_orders = ''
 

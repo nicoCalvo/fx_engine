@@ -1,4 +1,4 @@
-from ..data.dto import Portfolio, Position
+from ..data.dto import Portfolio, Position, Order
 from ..utils.exceptions import RabbitConnectionError
 from ..utils.mb_connector import MbConnector
 import time
@@ -26,7 +26,7 @@ class PerformanceTracker(Observer):
         RETRIEVE UPDATED PORTFOLIO
         AND SET IT TO STRATEGY
         '''
-        self.strategy.context.portfolio = self._retrieve_new_portfolio()
+        self._retrieve_new_portfolio()
 
     def _retrieve_new_portfolio(self):
         '''
@@ -67,14 +67,24 @@ class PerformanceTracker(Observer):
         for position in portfolio['positions']:
             positions_list.append(Position(**position))
 
-        return Portfolio(value=portfolio['portfolio_value'],
-                         returns=portfolio['portfolio_return'],
-                         return_std=portfolio['portfolio_returns_std'],
-                         beta=portfolio['portfolio_beta'], std=portfolio[
-                             'portfolio_std'],
-                         sharpe=portfolio['portfolio_sharpe'],
-                         cumulative_returns=portfolio[
-                             'portfolio_cumulative_returns'],
-                         max_drawdown=portfolio['portfolio_max_drawdown'],
-                         positions=positions_list)
+        new_portfolio = Portfolio(value=portfolio['portfolio_value'],
+                                  returns=portfolio['portfolio_return'],
+                                  return_std=portfolio[
+                                      'portfolio_returns_std'],
+                                  beta=portfolio['portfolio_beta'], std=portfolio[
+            'portfolio_std'],
+            sharpe=portfolio['portfolio_sharpe'],
+            cumulative_returns=portfolio[
+            'portfolio_cumulative_returns'],
+            max_drawdown=portfolio[
+                                      'portfolio_max_drawdown'],
+            positions=positions_list)
+
+        self.strategy.context.portfolio = new_portfolio
+        open_orders = []
+        for order in portfolio['open_orders']:
+            open_orders.append(Order(id=order['order_id'], date=order[
+                               'date'], symbol=order['symbol'], amount=order['amount']))
+
+        self.strategy.context._open_orders = open_orders
         # self.portfolio = json.loads(body)

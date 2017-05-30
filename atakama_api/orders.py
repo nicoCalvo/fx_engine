@@ -51,8 +51,7 @@ class OrderManager(object):
         TODO: define order_router return and how
         data will be showed to devs
         '''
-        orders = self.order_router.get_open_orders()
-        return orders
+        return self._context._open_orders
 
     def cancel_all_open_orders(self):
         self.perf_tracker.get_portfolio()

@@ -20,4 +20,4 @@ Portfolio = namedtuple(
 # TODO: Define how valid pairs will be available (each data feed could
 # have their owns)
 
-ValidPairs = namedtuple('ValidPairs', 'EURUSD, ARSMEX, YENUSD, USDEUR')
+Order = namedtuple('Order', 'id date symbol amount' )

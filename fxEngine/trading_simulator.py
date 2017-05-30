@@ -1,6 +1,6 @@
-import pyximport
-pyximport.install()
-from fxEngine.data.pair import Pair
+# import pyximport
+# pyximport.install()
+# from fxEngine.data.pair import Pair
 from fxEngine.strategy.strategy_compiler import StrategyCompiler
 from fxEngine.strategy.api_strategy import ApiStrategy
 from fxEngine.utils.exceptions import (
@@ -16,7 +16,7 @@ from fxEngine.clock.clock import FactoryClock
 from fxEngine.data.data_api import DataAPI
 
 
-from fxEngine.tests.data_demo_loader import DemoLoader
+# from fxEngine.tests.data_demo_loader import DemoLoader
 
 class TradingSimulator(object):
     '''
@@ -41,10 +41,11 @@ class TradingSimulator(object):
 
     def _validate_pairs(self):
         # FIXME: Cant be repeated pairs
-        forb_fx_pairs = [
-            x for x in self.traded_pairs if not Pair.is_allowed(x)]
-        if forb_fx_pairs:
-            raise TradingSymbolForbidden(forb_fx_pairs)
+        # forb_fx_pairs = [
+        #     x for x in self.traded_pairs if not Pair.is_allowed(x)]
+        # if forb_fx_pairs:
+        #     raise TradingSymbolForbidden(forb_fx_pairs)
+        pass
 
     def _load_strategy(self):
         try:
