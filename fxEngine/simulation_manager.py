@@ -38,7 +38,7 @@ class SimulationManager(object):
             print '\n\n\n'
             conn = MbConnector.get_connection()
             channel = conn.channel()
-            msg = dict(message='RUNTIME ERROR: '+ ' - ' + str(e), simulation_date='1901-01-01')
+            msg = dict(message='RUNTIME ERROR: ' + ' - ' + str(e), simulation_date='1901-01-01')
             channel.basic_publish(exchange='E_standard_log',
                                   routing_key=self.strategy.dto_strategy.id,
                                   body=json.dumps(msg))

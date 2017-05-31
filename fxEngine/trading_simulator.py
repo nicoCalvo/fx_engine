@@ -16,8 +16,6 @@ from fxEngine.clock.clock import FactoryClock
 from fxEngine.data.data_api import DataAPI
 
 
-# from fxEngine.tests.data_demo_loader import DemoLoader
-
 class TradingSimulator(object):
     '''
     TradingSimulator is the main class that defines, creates and
@@ -85,6 +83,7 @@ class TradingSimulator(object):
 
         data_portal.register_observer(perf_tracker)
         data_portal.ingest()
+
         return data_portal
 
     def __register_strategy(self):

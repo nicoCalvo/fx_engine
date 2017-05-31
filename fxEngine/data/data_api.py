@@ -1,4 +1,4 @@
-from .exceptions import InvalidPairError
+from .exceptions import InvalidPairError, InvalidTicksError
 from .ticker_filter import TickerFilter
 from .ticker_adapter import TickerAdapter
 import json
@@ -94,10 +94,13 @@ class DataAPI(object):
 
 
     def history(self, pairs, ticks):
+        if not isinstance(ticks, int) or ticks > 300 or ticks < 1:
+            raise InvalidTicksError(str(ticks))
         if not pairs:
             pairs = self._traded_pairs
         pairs = pairs if isinstance(pairs, list) else [pairs]
         
         pairs = [x for x in self._traded_pairs if x in pairs]
         return self._data_portal.get_slice(pairs, ticks)
-                
+
+
