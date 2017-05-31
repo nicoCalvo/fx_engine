@@ -65,7 +65,7 @@ if __name__ == "__main__":
         LOGGER.info('INCOMING MESSAGE: ' + body)
         message = json.loads(body)
         dto_strategy = DTOStrategy(**message['code'])
-        trading_simulator = TradingSimulator(dto_strategy)
+        trading_simulator = TradingSimulator(dto_strategy, message)
         trading_simulator.run_simulation('limited')
 
     channel.basic_consume(process_strategy, queue,no_ack=True)

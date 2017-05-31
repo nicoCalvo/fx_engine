@@ -1,5 +1,7 @@
 import json
 from datetime import datetime
+import pandas as pd
+
 
 class Observable(object):
     def __init__(self):
@@ -39,13 +41,32 @@ class DataPortal(Observable):
         #TODO: validate requested pair in self._pairs_names
         return self.data_bundle[pairs][-ticks:]
 
-    def _add_new_history_bar(self, tick):
+    def _add_new_history_bar(self, bar):
         '''
         put the tick into data_bundle and check size
         applying LIFO to the queue
 
         '''
-        pass
+        self.data_bundle = self.data_bundle.drop([self.data_bundle.ix[0].name])
+        pairs = [x['symbol'] for x in bar]
+
+        pairs_data = {}
+        for pair in pairs:
+            pairs_data[pair] = []
+
+        for pair_bar in bar:
+            data = [pair_bar['open_bid'], pair_bar['open_ask'],
+                    pair_bar['low_bid'], pair_bar['low_ask'],
+                    pair_bar['high_bid'], pair_bar['high_ask'],
+                    pair_bar['close_bid'], pair_bar['close_ask']]
+            pairs_data[pair_bar['symbol']].append(data)
+
+        dict_to_frame = {}
+        for key, pair in pairs_data.iteritems():
+            dict_to_frame[key] = pd.Series(pair, index=[bar[0]['time']])
+
+        new_frame = pd.DataFrame(dict_to_frame)
+        self.data_bundle = self.data_bundle.append(new_frame)
 
 
     def has_new_tick(self):

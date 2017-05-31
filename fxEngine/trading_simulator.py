@@ -29,7 +29,8 @@ class TradingSimulator(object):
     id_strategy: External ID assigned for this strategy
     '''
 
-    def __init__(self, dto_strategy):
+    def __init__(self, dto_strategy, msg):
+        self.msg = msg
         self.traded_pairs = dto_strategy.traded_pairs
         self._validate_pairs()
         self._validate_initial_capital(dto_strategy.capital_base)
@@ -87,5 +88,5 @@ class TradingSimulator(object):
         return data_portal
 
     def __register_strategy(self):
-        st_reg = StrategyRegistration(self.api_strategy.dto_strategy)
+        st_reg = StrategyRegistration(self.msg)
         st_reg.publish_strategy()
