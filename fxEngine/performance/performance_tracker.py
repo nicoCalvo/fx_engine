@@ -60,8 +60,31 @@ class PerformanceTracker(Observer):
                 exchange=self.exchange, routing_key='', body=self.excep_msg)
             raise RabbitConnectionError()
 
-        # body = '{"portfolio_value":100000,"cash":8000, "returns": 32342, "positions_value":12334534, "open_positions":[{"pair":"EURUSD", "amount":12000},{"pair":"JPYEUR", "amount":3500}]}'
-
+        # body = '{"portfolio_value":100000,"cash":8000, "returns": 32342, "positions_value":12334534, "positions":[{"pair":"EURUSD", "amount":12000},{"pair":"USDCAD", "amount":3500}]}'
+  #       body = ''' {
+  #   "date": "2013-06-07",
+  #   "portfolio_value": "7700",
+  #   "portfolio_return": "123",
+  #   "portfolio_returns_std": "535",
+  #   "portfolio_beta": "45645",
+  #   "portfolio_returns_std": "34534",
+  #   "portfolio_std": "45645",
+  #   "portfolio_sharpe": "4322",
+  #   "portfolio_cumulative_returns": "1111",
+  #   "portfolio_max_drawdown": "567567",
+  #   "portfolio_sharpe": "87867876",
+  #   "positions":[
+  #     {
+  #       "position_id": "dasd12",
+  #       "date_updated": "2013-06-07",
+  #       "symbol":"USDCAD",
+  #       "amount": "2300",
+  #       "value": "2342323"
+  #     }
+  #   ],
+  #   "open_orders":[
+  #   ]
+  # }'''
         portfolio = json.loads(body)
         positions_list = []
         for position in portfolio['positions']:

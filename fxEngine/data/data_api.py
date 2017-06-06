@@ -67,7 +67,6 @@ class DataAPI(object):
             last market close instead.
 
         """
-
         try:
             pairs = self._set_pairs(pairs)
             values = self._set_values(values)
@@ -94,6 +93,7 @@ class DataAPI(object):
 
 
     def history(self, pairs, ticks):
+
         if not isinstance(ticks, int) or ticks > 300 or ticks < 1:
             raise InvalidTicksError(str(ticks))
         if not pairs:

@@ -1,4 +1,5 @@
 from fxEngine.order.order_router_client import OrderRouter
+from fxEngine.data.dto import Portfolio
 from fxEngine.order.exceptions import (
     InvalidPairOrder,
     InvalidDueDate,
@@ -7,21 +8,22 @@ from fxEngine.order.exceptions import (
 import json
 
 
+
 def validate_params(function):
-        def validate(*args):
-            pair = args[0]
-            price = args[1]
-            # due_date = args[2]
-            if pair in OrderManager.strategy.traded_pairs:
-                self._logger.info('Pair not selected for trading')
-                raise InvalidPairOrder(pair)
-            if not isinstance(price, float):
-                raise InvalidPriceOrder(pair)
-                self._logger.info('Invalid Price order')
-            # today = OrderManager.clock.new_date
-            # if due_date <= today:
-            #     raise InvalidDueDate(due_date)
-            function(*args)
+    def validate(*args):
+        pair = args[0]
+        price = args[1]
+        # due_date = args[2]
+        if pair in OrderManager.strategy.traded_pairs:
+            self._logger.info('Pair not selected for trading')
+            raise InvalidPairOrder(pair)
+        if not isinstance(price, float):
+            raise InvalidPriceOrder(pair)
+            self._logger.info('Invalid Price order')
+        # today = OrderManager.clock.new_date
+        # if due_date <= today:
+        #     raise InvalidDueDate(due_date)
+        function(*args)
 
 
 class OrderManager(object):
@@ -75,18 +77,21 @@ class OrderManager(object):
     # @validate_params
     def stop_order(self, pair, price, due_date=None):
         due_date = due_date or ''
-        stop_order = dict(order)
         #self.log.write('STOP ORDER: ' + pair.name + '  DATE: ' + due_date)
-        
+
     def _publish_orders(self):
         cash = self._context.portfolio.value
-        amount = sum([x['price'] if x['type'] == 'limit' else 0 for x in self._orders] )
+        amount = sum([x['price'] if x['type'] ==
+                      'limit' else 0 for x in self._orders])
 
         if cash > amount:
             # publish orders
             if self._orders:
                 self._logger.info('ORDERS PLACED: ' + json.dumps(self._orders))
+                clone = self._context.portfolio._asdict()
+                clone['value'] = int(cash) - amount
+                self._context.portfolio = Portfolio(**clone)
         elif amount > 0:
-            self._logger.info('NOT ENOUGH CASH TO TRADE ORDER: ' + str()) 
+            self._logger.info('NOT ENOUGH CASH TO TRADE ORDER: ')
         # self.order_router.publish_orders(self._orders)
         self._orders = []

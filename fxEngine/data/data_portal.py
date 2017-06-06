@@ -38,8 +38,17 @@ class DataPortal(Observable):
         return self.data_bundle.cols.names[1:]
 
     def get_slice(self, pairs, ticks):
-        #TODO: validate requested pair in self._pairs_names
+        # TODO: validate requested pair in self._pairs_names
+
+        if len(pairs) == 1:
+            return self.single_pair(pairs[0], ticks)
+            pass
         return self.data_bundle[pairs][-ticks:]
+
+    def single_pair(self, pair, ticks):
+        raw_data = self.data_bundle[pair][-ticks:]
+        data = [x for x in raw_data]
+        return pd.DataFrame(data=data, columns=['open_bid', 'open_ask', 'low_bid', 'low_ask', 'high_bid', 'high_ask', 'close_bid', 'close_ask'])
 
     def _add_new_history_bar(self, bar):
         '''
@@ -68,7 +77,6 @@ class DataPortal(Observable):
         new_frame = pd.DataFrame(dict_to_frame)
         self.data_bundle = self.data_bundle.append(new_frame)
 
-
     def has_new_tick(self):
         self.get_current_tick()
         if self.current_tick:
@@ -81,7 +89,7 @@ class DataPortal(Observable):
         self.current_tick = data['ticker']
         if data['bar']:
             self._add_new_history_bar(data['bar'])
-        return self.current_tick # Jumps timestamp
-    
+        return self.current_tick  # Jumps timestamp
+
     def get_tick_date(self):
         return datetime.strptime(self.current_tick[0]['time'], '%Y/%m/%d %H:%M:%S')

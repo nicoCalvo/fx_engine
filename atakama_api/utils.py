@@ -39,7 +39,7 @@ class AtakamaLogger(Logger):
         # time.sleep(2)
         channel = self.conn.channel()
         date = self.clock.new_date.strftime('%Y-%m-%d %H:%M:%S')if isinstance(self.clock.new_date, datetime) else '1901-01-01' #.strftime('%Y-%m-%d %H:%M:%S')
-        msg = dict(simulation_date=date, message=msg)
+        msg = dict(simulation_date=date, message=str(msg))
         try:
             channel.basic_publish(exchange=self.E_ST_LOG,
                                        routing_key=str(self.strategy_id),

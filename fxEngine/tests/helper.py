@@ -11,8 +11,8 @@ str_strategy_invalid_script = {"id": "2", "broker": "Saxo", "data_feed":"Saxo", 
 str_strategy_valid_script = {"id": "2", "broker": "Saxo", "data_feed":"Saxo","simulation_mode": "local", "end_date": "2016-10-06", "capital_base": 9999999, "simulation_type": "backtest", "frequency": "daily", "list_symbols": ["USDEUR"], "start_date": "2015-10-03",
                              "script": "\n\n\ndef initialize(context):\n   context.i = 0 \n\n\ndef handle_data(context, data):\n    print data\n    print data.__dict__\n    order(symbol(\'AAPL\'), 10)\n"}
 
-current_data_test = {"id": "9","broker": "Saxo",  "data_feed":"Saxo", "simulation_mode": "local", "end_date": "2016-10-06", "capital_base": 9999999, "simulation_type": "backtest", "frequency": "daily", "list_symbols": ["EURUSD", "ARSMEX"], "start_date": "2015-10-03",
-                     "script": "\ndef initialize(context):\n    context.i = 4\n\n\ndef handle_data(context, data):\n    print data.history(pairs='ARSMEX', ticks=10)\n    context.i += 1\n    \n"}
+current_data_test = {"id": "9","broker": "Saxo",  "data_feed":"Saxo", "simulation_mode": "local", "end_date": "2016-10-06", "capital_base": 9999999, "simulation_type": "backtest", "frequency": "daily", "list_symbols": ["EURUSD", "USDCAD"], "start_date": "2015-10-03",
+                     "script": "\ndef initialize(context):\n    context.i = 4\n\n\ndef handle_data(context, data):\n    log.info(data.history(pairs='EURUSD', ticks=10).to_string())\n    log.info(data.current().to_string())\n    \n"}
 
 
 scheduler_test = {"id": "9", "broker": "Saxo", "data_feed":"Saxo", "simulation_mode": "local", "end_date": "2016-10-06", "capital_base": 9999999, "simulation_type": "backtest", "frequency": "daily", "list_symbols": ["USDEUR", "ARSMEX"], "start_date": "2015-10-03",
