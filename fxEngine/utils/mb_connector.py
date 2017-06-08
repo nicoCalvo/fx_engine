@@ -4,7 +4,7 @@ import time
 
 class MbConnector(object):
     host = os.environ.get('RABBIT_HOST', 'localhost')
-    port = os.environ.get('RABBIT_PORT', 5672)
+    port = int(os.environ.get('RABBIT_PORT', 5672))
     virtual_host = os.environ.get('RABBIT_VHOST', "/")
     credentials = pika.PlainCredentials(
         username=os.environ.get('RABBIT_USERNAME', 'tonyg'),

@@ -34,7 +34,7 @@ logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
 
 if __name__ == "__main__":
     host = os.environ.get('RABBIT_HOST', '127.0.0.1')
-    port = os.environ.get('RABBIT_PORT', 5672)
+    port = int(os.environ.get('RABBIT_PORT', 5672))
     virtual_host = os.environ.get('RABBIT_VHOST', "/")
     credentials = pika.PlainCredentials(
         username=os.environ.get('RABBIT_USERNAME', 'tonyg'),

@@ -4,6 +4,7 @@ import time
 import json
 import pandas as pd
 
+
 class DataRetriever(object):
     """docstring for DataRtriever"""
 
@@ -102,12 +103,14 @@ class DataRetriever(object):
         for key, pair in pairs_data.iteritems():
             dict_to_frame[key] = pd.Series(pair, index=dates)
         return pd.DataFrame(dict_to_frame)
-        # return pd.DataFrame({'ARSMEX': pd.Series(pairs_data['ARSMEX'], index=dates), 'YENEUR': pd.Series(pairs_data['YENEUR'], index=dates)})
-    
+        # return pd.DataFrame({'ARSMEX': pd.Series(pairs_data['ARSMEX'],
+        # index=dates), 'YENEUR': pd.Series(pairs_data['YENEUR'],
+        # index=dates)})
+
     def get_bundle(self):
 
-        # return '''[  [  
-        #           {  
+        # return '''[  [
+        #           {
         #              "low_bid":7.45495,
         #              "high_ask":7.4625,
         #              "symbol":"EURUSD",
@@ -119,7 +122,7 @@ class DataRetriever(object):
         #              "open_ask":7.46045,
         #              "low_ask":7.45795
         #           },
-        #           {  
+        #           {
         #              "low_bid":4.4549,
         #              "high_ask":4.4625,
         #              "symbol":"USDCAD",
@@ -132,8 +135,8 @@ class DataRetriever(object):
         #              "low_ask":4.4575
         #           }
         #        ],
-        #        [  
-        #           {  
+        #        [
+        #           {
         #              "low_bid":7.45495,
         #              "high_ask":7.4625,
         #              "symbol":"EURUSD",
@@ -145,7 +148,7 @@ class DataRetriever(object):
         #              "open_ask":7.46045,
         #              "low_ask":7.45795
         #           },
-        #           {  
+        #           {
         #              "low_bid":4.4549,
         #              "high_ask":4.4625,
         #              "symbol":"USDCAD",
@@ -161,7 +164,7 @@ class DataRetriever(object):
         #     ]'''
 
         count = 0
-        max_count = 50
+        max_count = 20
         body = None
         channel = self.conn.channel()
         while not body and count < max_count:
@@ -174,6 +177,12 @@ class DataRetriever(object):
                 time.sleep(2)
                 count += 1
 
-        if count == 30 and not body:
+        if count == max_count and not body:
+            channel = self.conn.channel()
+            channel.basic_publish(
+                exchange='E_timeout_exceptions', routing_key='',
+                body='UNABLE TO PERFORM INGEST ' + self.queue_ingest)
+            raise RabbitConnectionError()
+
             raise RabbitConnectionError('Retrieving ingest: ' + self._id)
         return body

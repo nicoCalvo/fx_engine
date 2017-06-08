@@ -58,7 +58,10 @@ class TradingSimulator(object):
 
     def run_simulation(self, clock_type):
         self.__register_strategy()
-        data_portal = self._prepare_data_portal()
+        try:
+            data_portal = self._prepare_data_portal()
+        except:
+            return 0
         clock = FactoryClock.get_clock(clock_type, data_portal)
         self.api_strategy.set_internal_variables(clock)
         '''
@@ -84,6 +87,7 @@ class TradingSimulator(object):
 
         data_portal.register_observer(perf_tracker)
         data_portal.ingest()
+
 
         return data_portal
 
