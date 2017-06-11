@@ -13,8 +13,8 @@ class InvalidPairError(Exception):
     base_msg = 'Pair/s not in traded list pairs '
 
     def __init__(self, valid_pairs, requested_pairs):
-        super(InvalidPairValueError, self).__init__(
-            self.base_msg + valid_pairs, + ' RECEIVED:' + requested_pairs)
+        super(InvalidPairError, self).__init__(
+            self.base_msg + valid_pairs + ' RECEIVED:' + requested_pairs)
 
 
 class InvalidTicksError(Exception):

@@ -98,8 +98,10 @@ class DataAPI(object):
             raise InvalidTicksError(str(ticks))
         if not pairs:
             pairs = self._traded_pairs
-        pairs = pairs if isinstance(pairs, list) else [pairs]
-        
+        else:
+	    pairs = pairs if isinstance(pairs, list) else [pairs]
+        if [x for x in pairs if x in self._traded_pairs] != pairs:
+            raise InvalidPairError(str(pairs), str(self._traded_pairs))
         pairs = [x for x in self._traded_pairs if x in pairs]
         return self._data_portal.get_slice(pairs, ticks)
 
