@@ -42,7 +42,8 @@ if __name__ == "__main__":
 
     con_params = pika.ConnectionParameters(host=host, port=port,
                                            credentials=credentials,
-                                           virtual_host=virtual_host)
+                                           virtual_host=virtual_host,
+					   heartbeat_interval=0)
   
 
     try:
@@ -66,7 +67,7 @@ if __name__ == "__main__":
         message = json.loads(body)
         dto_strategy = DTOStrategy(**message['code'])
         trading_simulator = TradingSimulator(dto_strategy, message)
-        trading_simulator.run_simulation('limited')
+        trading_simulator.run_simulation('eternal')
 
     channel.basic_consume(process_strategy, queue,no_ack=True)
     channel.start_consuming()
