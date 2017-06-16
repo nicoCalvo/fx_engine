@@ -1,0 +1,12 @@
+logger: |
+    from atakama_api.utils import AtakamaLogger as Logger
+    log = Logger('{id}')
+       
+ordermanager: |
+    from atakama_api.orders import OrderManager
+    order = OrderManager('{id}') 
+
+simulationdate : |
+    from atakama_api.dates import Date
+    date= Date()
+    
