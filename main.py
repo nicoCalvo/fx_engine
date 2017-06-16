@@ -54,10 +54,6 @@ if __name__ == "__main__":
         conn = pika.BlockingConnection(con_params)
         channel = conn.channel()
         queue = 'Q_new_py_fxEngine'# + instance
-        channel.queue_declare(queue=queue, durable=True)
-        channel.queue_bind(queue=queue,
-                       exchange='E_new_py_fxEngine',
-                       routing_key='Python')
 
     except Exception, e:
         print 'ERROR'
