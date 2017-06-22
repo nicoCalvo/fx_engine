@@ -39,7 +39,6 @@ class DataPortal(Observable):
 
     def get_slice(self, pairs, ticks):
         # TODO: validate requested pair in self._pairs_names
-
         if len(pairs) == 1:
             return self.single_pair(pairs[0], ticks)
             pass
@@ -56,7 +55,7 @@ class DataPortal(Observable):
         applying LIFO to the queue
 
         '''
-        self.data_bundle = self.data_bundle.drop([self.data_bundle.ix[0].name])
+        self.data_bundle = self.data_bundle.drop([self.data_bundle.ix[-1].name])
         pairs = [x['symbol'] for x in bar]
 
         pairs_data = {}
@@ -75,7 +74,8 @@ class DataPortal(Observable):
             dict_to_frame[key] = pd.Series(pair, index=[bar[0]['time']])
 
         new_frame = pd.DataFrame(dict_to_frame)
-        self.data_bundle = self.data_bundle.append(new_frame)
+        frames = [ new_frame, self.data_bundle]
+        self.data_bundle = pd.concat(frames)
 
     def has_new_tick(self):
         self.get_current_tick()

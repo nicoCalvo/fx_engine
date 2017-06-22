@@ -30,7 +30,6 @@ class DataRetriever(object):
             if not body:
                 count += 1
                 time.sleep(1)
-
         if count == max_count and not body:
             raise RabbitConnectionError('Retrieving tick: ' + self._id)
         channel.close()

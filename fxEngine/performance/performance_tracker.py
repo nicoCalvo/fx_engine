@@ -33,9 +33,9 @@ class PerformanceTracker(Observer):
         AS OF NOW, IT RETURN A MockedPortfolio
         '''
 
-        # return Portfolio(9999, 100000, 3456, 0.0, 123, 33345, [Position(
-        # 2, 34, 54, 56, 78), Position(2, 34, 54, 56, 78)], '2012-03-04',
-        # 42423)
+        return Portfolio(9999, 100000, 3456, 0.0, 123, 33345, [Position(
+        2, 34, 54, 56, 78), Position(2, 34, 54, 56, 78)], '2012-03-04',
+        42423)
         channel = self.conn.channel()
         not_message = True
         max_count = 20

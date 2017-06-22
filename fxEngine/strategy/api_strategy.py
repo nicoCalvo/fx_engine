@@ -65,7 +65,7 @@ class ApiStrategy(object):
 
     def handle_data(self):
         self._handle_data(self.context, self.data_api)
-        
+
         self.strategy['order']._publish_orders()
 
     def get_portfolio(self):
@@ -83,9 +83,9 @@ class ApiStrategy(object):
     def on_new_month(self):
         self._before_new_month(self.context, self.data_api)
 
-    def set_internal_variables(self, clock):
+    def set_internal_variables(self, clock, data_portal):
         self.strategy['date'].clock = clock
         self.strategy['log'].clock = clock
         self.strategy['order']._logger = self.strategy['log']
         self.strategy['order']._context = self.context
-
+        self.strategy['order']._order_adapter.data_portal= data_portal

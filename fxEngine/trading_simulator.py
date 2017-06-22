@@ -63,7 +63,7 @@ class TradingSimulator(object):
         except:
             return 0
         clock = FactoryClock.get_clock(clock_type, data_portal)
-        self.api_strategy.set_internal_variables(clock)
+        self.api_strategy.set_internal_variables(clock, data_portal)
         '''
         intialize variables with params and check ig already instatiated objects
         has reference inside the compiled code
@@ -84,7 +84,6 @@ class TradingSimulator(object):
             ingester=DataRetriever(_id), pairs=self.traded_pairs)
         # data_portal = DataPortal(
             # ingester=DemoLoader(), pairs=self.traded_pairs)
-
         data_portal.register_observer(perf_tracker)
         data_portal.ingest()
 
