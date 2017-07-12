@@ -18,7 +18,6 @@ class DataRetriever(object):
                         'close_bid', 'close_ask' ]
 
     def current_tick(self):
-
         body = None
         count = 0
         max_count = 20
@@ -37,6 +36,7 @@ class DataRetriever(object):
             raise RabbitConnectionError('Retrieving tick: ' + self._id)
         channel.close()
         return body
+
 
     def ingest(self):
         bundle = self.get_bundle()
@@ -62,7 +62,6 @@ class DataRetriever(object):
         for symbol, data_frame in pairs_data.iteritems():
             pn[symbol] = pd.DataFrame(data_frame, index=dates, columns=self.columns)
         return pn
-
 
 
     def get_bundle(self):
