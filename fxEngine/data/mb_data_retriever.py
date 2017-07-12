@@ -13,6 +13,9 @@ class DataRetriever(object):
         self.conn = MbConnector.get_connection()
         self.queue_tick = 'Q_tick_strategy_' + str(_id)
         self.queue_ingest = 'Q_ingest_strategy_' + str(_id)
+        self.columns = ['open_bid', 'open_ask','low_bid',
+                        'low_ask', 'high_bid', 'high_ask',
+                        'close_bid', 'close_ask' ]
 
     def current_tick(self):
 
@@ -41,6 +44,7 @@ class DataRetriever(object):
         pairs = [x['symbol'] for x in history[0]]
 
         pairs_data = {}
+
         for pair in pairs:
             pairs_data[pair] = []
         dates = []
@@ -54,10 +58,12 @@ class DataRetriever(object):
                         pair_bar['close_bid'], pair_bar['close_ask']]
                 pairs_data[pair_bar['symbol']].append(data)
 
-        dict_to_frame = {}
-        for key, pair in pairs_data.iteritems():
-            dict_to_frame[key] = pd.Series(pair, index=dates)
-        return pd.DataFrame(dict_to_frame)
+        pn = pd.Panel(major_axis=dates, minor_axis=self.columns)
+        for symbol, data_frame in pairs_data.iteritems():
+            pn[symbol] = pd.DataFrame(data_frame, index=dates, columns=self.columns)
+        return pn
+
+
 
     def get_bundle(self):
         count = 0

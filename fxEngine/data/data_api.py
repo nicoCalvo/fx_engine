@@ -93,7 +93,6 @@ class DataAPI(object):
 
 
     def history(self, pairs, ticks):
-
         if not isinstance(ticks, int) or ticks > 300 or ticks < 1:
             raise InvalidTicksError(str(ticks))
         if not pairs:

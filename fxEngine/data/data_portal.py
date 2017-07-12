@@ -38,16 +38,13 @@ class DataPortal(Observable):
         return self.data_bundle.cols.names[1:]
 
     def get_slice(self, pairs, ticks):
-        # TODO: validate requested pair in self._pairs_names
-        if len(pairs) == 1:
-            return self.single_pair(pairs[0], ticks)
-            pass
-        return self.data_bundle[pairs][-ticks:]
+        ind = self.data_bundle.major_axis[0:ticks]
+        pairs = pairs if isinstance(pairs, list) else [pairs]
+        return self.data_bundle[pairs].ix[:,ind,:]
 
     def single_pair(self, pair, ticks):
-        raw_data = self.data_bundle[pair][-ticks:]
-        data = [x for x in raw_data]
-        return pd.DataFrame(data=data, columns=['open_bid', 'open_ask', 'low_bid', 'low_ask', 'high_bid', 'high_ask', 'close_bid', 'close_ask'])
+        return self.data_bundle[pair].ix[0:int(ticks)]
+
 
     def _add_new_history_bar(self, bar):
         '''
@@ -55,27 +52,28 @@ class DataPortal(Observable):
         applying LIFO to the queue
 
         '''
-        self.data_bundle = self.data_bundle.drop([self.data_bundle.ix[-1].name])
+        date = bar[0]['time']
         pairs = [x['symbol'] for x in bar]
+        dates = [x for x in self.data_bundle.major_axis]
+        dates.insert(0,date)
+        del dates[-1]
+        self.data_bundle = self.data_bundle.reindex(major_axis=dates)
 
         pairs_data = {}
         for pair in pairs:
             pairs_data[pair] = []
-
+        date = bar[0]['time']
         for pair_bar in bar:
-            data = [pair_bar['open_bid'], pair_bar['open_ask'],
-                    pair_bar['low_bid'], pair_bar['low_ask'],
-                    pair_bar['high_bid'], pair_bar['high_ask'],
-                    pair_bar['close_bid'], pair_bar['close_ask']]
-            pairs_data[pair_bar['symbol']].append(data)
+            self.data_bundle[pair_bar['symbol']].ix[date]['open_bid']  = pair_bar['open_bid']
+            self.data_bundle[pair_bar['symbol']].ix[date]['open_ask']  = pair_bar['open_ask']
+            self.data_bundle[pair_bar['symbol']].ix[date]['low_bid']   = pair_bar['low_bid']
+            self.data_bundle[pair_bar['symbol']].ix[date]['low_ask']   = pair_bar['low_ask']
+            self.data_bundle[pair_bar['symbol']].ix[date]['high_bid']  = pair_bar['high_bid']
+            self.data_bundle[pair_bar['symbol']].ix[date]['high_ask']  = pair_bar['high_ask']
+            self.data_bundle[pair_bar['symbol']].ix[date]['close_bid'] = pair_bar['close_bid']
+            self.data_bundle[pair_bar['symbol']].ix[date]['close_ask'] = pair_bar['close_ask']
 
-        dict_to_frame = {}
-        for key, pair in pairs_data.iteritems():
-            dict_to_frame[key] = pd.Series(pair, index=[bar[0]['time']])
-
-        new_frame = pd.DataFrame(dict_to_frame)
-        frames = [ new_frame, self.data_bundle]
-        self.data_bundle = pd.concat(frames)
+        
 
     def has_new_tick(self):
         self.get_current_tick()
