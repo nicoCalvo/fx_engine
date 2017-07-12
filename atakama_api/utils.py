@@ -38,7 +38,7 @@ class AtakamaLogger(Logger):
         self.strategy_id = _id
 
     def info(self, msg):
-        msg str(msg)
+        msg = str(msg)
         channel = self.conn.channel()
         date = self.clock.new_date.strftime('%Y-%m-%d %H:%M:%S')if isinstance(self.clock.new_date, datetime) else '1901-01-01' #.strftime('%Y-%m-%d %H:%M:%S')
         
