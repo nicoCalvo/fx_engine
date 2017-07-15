@@ -39,12 +39,8 @@ class TradingSimulator(object):
         self._load_strategy()
 
     def _validate_pairs(self):
-        # FIXME: Cant be repeated pairs
-        # forb_fx_pairs = [
-        #     x for x in self.traded_pairs if not Pair.is_allowed(x)]
-        # if forb_fx_pairs:
-        #     raise TradingSymbolForbidden(forb_fx_pairs)
-        pass
+        self.traded_pairs = list(set(self.traded_pairs))
+        
 
     def _load_strategy(self):
         try:

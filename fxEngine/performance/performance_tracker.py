@@ -32,6 +32,16 @@ class PerformanceTracker(Observer):
         '''
         AS OF NOW, IT RETURN A MockedPortfolio
         '''
+        '''
+          parsear las ordenes que vienen como agregadas
+          OJO PONER CADA ORDEN ENVIADA EN UNA LISTA DE
+          TENER UNA LISTA DE ORDENES POR CADA PAR
+          AGREGAR LAS ORDENES QUE EXISTAN
+          LAS QUE SE GENEREN AGREGADAS DEJARLAS COMO AGREGADAS
+          Y ELIMINARLAS DE LA LISTA DE ORDENES
+          
+
+        '''
 
         return Portfolio(9999, 100000, 3456, 0.0, 123, 33345, [Position(
         2, 34, 54, 56, 78), Position(2, 34, 54, 56, 78)], '2012-03-04',

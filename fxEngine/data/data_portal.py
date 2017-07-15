@@ -82,6 +82,14 @@ class DataPortal(Observable):
             return True
         return False
 
+    def get_first_tick(self):
+        data = json.loads(self.ingester.current_tick())
+        self.current_tick = data['ticker']
+        if data['bar']:
+            self._add_new_history_bar(data['bar'])
+            
+
+
     def get_current_tick(self):
         data = json.loads(self.ingester.current_tick())
         self.current_tick = data['ticker']

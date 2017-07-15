@@ -88,4 +88,5 @@ class ApiStrategy(object):
         self.strategy['log'].clock = clock
         self.strategy['order']._logger = self.strategy['log']
         self.strategy['order']._context = self.context
+        self.strategy['order']._strategy = self.dto_strategy
         self.strategy['order']._order_adapter.data_portal= data_portal

@@ -14,6 +14,10 @@ class Logger(object):
     def info(self, msg):
         pass
 
+    @abc.abstractmethod
+    def _error(self, msg):
+        pass
+
 
 class LocalLogger(Logger):
     FILENAME = 'demo_log.log'
@@ -24,12 +28,16 @@ class LocalLogger(Logger):
     def info(self, msg):
         self.file.write('INFO: ' + msg + '\n')
 
+    def _error(self, msg):
+        self.file.write('ERROR: ' + msg + '\n')
+
     def __del__(self):
         self.file.close()
 
 
 class AtakamaLogger(Logger):
     E_ST_LOG = 'E_standard_log'
+    E_ST_ERROR_LOG = 'E_error_log'
     MAX_LENGTH_LOG = 500
     WARNING_SHRINK_MESSAGE = 'MESSAGE SIZE > 500. MESSAGE SHRINKED'
 
@@ -56,6 +64,31 @@ class AtakamaLogger(Logger):
         msg = dict(simulation_date=date, message=str(msg))
         try:
             channel.basic_publish(exchange=self.E_ST_LOG,
+                                       routing_key=str(self.strategy_id),
+                                       body=json.dumps(msg))
+        except Exception, e:
+            print '\n\n\n\n'
+            print 'SE ROMPIOOOO  '+ str(e)
+
+    def _error(self, msg):
+        msg = str(msg)
+        channel = self.conn.channel()
+        date = self.clock.new_date.strftime('%Y-%m-%d %H:%M:%S')if isinstance(self.clock.new_date, datetime) else '1901-01-01' #.strftime('%Y-%m-%d %H:%M:%S')
+        
+        if len(msg) > self.MAX_LENGTH_LOG:
+            msg = msg[:self.MAX_LENGTH_LOG]
+            try:
+                msg = dict(simulation_date=date, message=self.WARNING_SHRINK_MESSAGE)
+                channel.basic_publish(exchange=self.E_ST_LOG,
+                                      routing_key=str(self.strategy_id),
+                                      body=json.dumps(msg))
+            except Exception, e:
+                print '\n\n\n\n'
+                print 'SE ROMPIOOOO  '+ str(e)
+
+        msg = dict(simulation_date=date, message=str(msg))
+        try:
+            channel.basic_publish(exchange=self.E_ST_ERROR_LOG,
                                        routing_key=str(self.strategy_id),
                                        body=json.dumps(msg))
         except Exception, e:

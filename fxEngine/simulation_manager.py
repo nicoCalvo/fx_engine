@@ -22,7 +22,6 @@ class SimulationManager(object):
             while self.clock.has_new_tick():
                 self._run_scheduled_functions()
                 self.strategy.handle_data()
-                # publish orders
         except RabbitConnectionError:
             conn = MbConnector.get_connection()
             channel = conn.channel()

@@ -5,6 +5,10 @@ str_strategy_invalid_pair = {"id": "2","broker": "Saxo",  "data_feed":"Saxo",  "
 str_strategy_valid_pair = {"id": "2", "broker": "Saxo", "data_feed":"Saxo" ,"simulation_mode": "local", "end_date": "2016-10-06", "capital_base": 9999999, "simulation_type": "backtest", "frequency": "daily", "list_symbols": ["USDEUR"], "start_date": "2015-10-03",
                            "script": "\n\n\ndef initialize(context):\n   context.i = 0 \n\n\ndef handle_data(context, data):\n    print data\n    print data.__dict__\n    order(symbol(\'AAPL\'), 10)\n"}
 
+str_strategy_invalid_keys = { "broker": "Saxo", "data_feed":"Saxo" ,"simulation_mode": "local", "end_date": "2016-10-06", "capital_base": 9999999, "simulation_type": "backtest", "frequency": "daily", "list_symbols": ["USDEUR"], "start_date": "2015-10-03",
+                           "script": "\n\n\ndef initialize(context):\n   context.i = 0 \n\n\ndef handle_data(context, data):\n    print data\n    print data.__dict__\n    order(symbol(\'AAPL\'), 10)\n"}
+
+
 str_strategy_invalid_script = {"id": "2", "broker": "Saxo", "data_feed":"Saxo", "simulation_mode": "local", "end_date": "2016-10-06", "capital_base": 9999999, "simulation_type": "backtest", "frequency": "daily", "list_symbols": ["USDEUR"], "start_date": "2015-10-03",
                                "script": "NOT A VALID STRATEGY"}
 
@@ -22,13 +26,17 @@ scheduler_plus_simpleai_test = {"id": "9","broker": "Saxo", "data_feed":"Saxo" ,
                                 "script": "from atakama_api.dates import Dates\nfrom simpleai.search import SearchProblem, astar\n\n\nGOAL = 'HELLO WORLD'\n\nclass HelloProblem(SearchProblem):\n    def actions(self, state):\n        if len(state) < len(GOAL):\n            return list(' ABCDEFGHIJKLMNOPQRSTUVWXYZ')\n        else:\n            return []\n\n    def result(self, state, action):\n        return state + action\n\n    def is_goal(self, state):\n        return state == GOAL\n\n    def heuristic(self, state):\n        # how far are we from the goal?\n        wrong = sum([1 if state[i] != GOAL[i] else 0\n                    for i in range(len(state))])\n        missing = len(GOAL) - len(state)\n        return wrong + missing\n\n\ndef initialize(context):\n    context.i = 4\n    context.days = 0\n    context.months = 0\n    context.problem = HelloProblem(initial_state='')\n\n\ndef handle_data(context, data):\n    pass\n\n\ndef before_new_day(context, data):\n    context.days += 1\n    result = astar(context.problem)\n    f = open('resultado.log','w')\n    f.write(result.state)\n    f.write('     ')\n    f.write(str(result.path()))\n    f.close()\n\ndef before_new_month(context, data):\n    context.months += 1"}
 
 
+
 # VALID_STRATEGY = DTOStrategy(**str_strategy_valid_script)
 
 
 CURRRENT_DATA = DTOStrategy(**current_data_test)
 SCHED_TEST = DTOStrategy(**scheduler_test)
 SIMPLEAI_SCHED_TEST = DTOStrategy(**scheduler_plus_simpleai_test)
-
+INVALID_STRATEGY = DTOStrategy(**str_strategy_invalid_script)
+VALID_STRATEGY = DTOStrategy(**str_strategy_valid_pair)
+STRATEGY_VALID_PAIR = DTOStrategy(**str_strategy_valid_pair)
+STRATEGY_INVALID_PAIR = DTOStrategy(**str_strategy_invalid_pair)
 
 class RandomStrategy(object):
     strategies = dict(current=CURRRENT_DATA, sched=SCHED_TEST,

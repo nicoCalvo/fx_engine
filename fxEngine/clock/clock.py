@@ -33,19 +33,18 @@ class EternalClock(Observable):
         if self.data_portal.has_new_tick():
             self.last_date = self.new_date
             self.new_date = self.data_portal.get_tick_date()
+
             has_tick = True
         return has_tick
 
     def get_first_tick(self):
-        tick = self.data_portal.get_current_tick()
+        self.data_portal.get_first_tick()
         self.new_date = self.data_portal.get_tick_date()
         self.last_day = self.new_date.day
         self.last_month = self.new_date.month
-        return tick
 
     def is_new_day(self):
         is_new = False
-
         if self.last_day != self.new_date.day:
             self.last_day = self.new_date.day
             is_new = True

@@ -29,29 +29,19 @@ class TestTradingSimulator(unittest.TestCase):
     @mock.patch('fxEngine.trading_simulator.ApiStrategy.__init__',
                 side_effect=mock_api_strategy)
     @mock.patch('fxEngine.trading_simulator.TradingSimulator._load_strategy')
-    def test_invalid_pairs(self, mock_load_strategy, mock_capital_validator, mock_api_strategy):
-        mock_load_strategy.return_value = None
-        self.assertRaises(TradingSymbolForbidden,
-                          TradingSimulator, STRATEGY_INVALID_PAIR)
-
-    @mock.patch('fxEngine.trading_simulator.TradingSimulator._validate_initial_capital',
-                side_effect=mock_valid_capital)
-    @mock.patch('fxEngine.trading_simulator.ApiStrategy.__init__',
-                side_effect=mock_api_strategy)
-    @mock.patch('fxEngine.trading_simulator.TradingSimulator._load_strategy')
     def test_valid_pairs(self, mock_load_strategy, mock_capital_validator, mock_api_strategy):
         mock_load_strategy.return_value = None
         try:
-            TradingSimulator(STRATEGY_VALID_PAIR)
+            TradingSimulator(STRATEGY_VALID_PAIR,'')
         except Exception, e:
             self.fail("Encountered an unexpected exception: " + str(e))
 
     def test_compile_invalid_strategy(self):
         self.assertRaises(CompileMethodException,
-                          TradingSimulator, INVALID_STRATEGY)
+                          TradingSimulator, INVALID_STRATEGY, '')
 
     def test_compile_valid_strategy(self):
         try:
-            TradingSimulator(VALID_STRATEGY)
+            TradingSimulator(VALID_STRATEGY,'')
         except Exception, e:
             self.fail("Encountered an unexpected exception: " + str(e))

@@ -19,9 +19,10 @@ class OrderAdapter(object):
             symbols.append(price_item)
         return  symbols
 
-    def get_order_messsage(self, orders):
+    def get_order_messsage(self, new_orders, canceled_orders):
         date = self.data_portal.current_tick[0]['time']
-        for order in orders:
+        for order in new_orders:
             order['date'] = date
         prices = self._adapt_ticker()
-        return json.dumps(dict(new_orders=orders, new_prices=prices))
+        return json.dumps(dict(new_orders=new_orders, new_prices=prices,
+                               canceled_orders=canceled_orders))

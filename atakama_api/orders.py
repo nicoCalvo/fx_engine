@@ -6,31 +6,17 @@ from fxEngine.order.exceptions import (
     InvalidDueDate,
     InvalidPriceOrder
 )
+from fxEngine.order.limit_order import LimitOrder
+from fxEngine.order.stop_order import StopOrder
+from fxEngine.order.market_order import MarketOrder
 import json
 
-
-
-def validate_params(function):
-    def validate(*args):
-
-        pair = args[0]
-        price = args[1]
-        # due_date = args[2]
-        if pair in OrderManager.strategy.traded_pairs:
-            self._logger.info('Pair not selected for trading')
-            raise InvalidPairOrder(pair)
-        if not isinstance(price, float):
-            raise InvalidPriceOrder(pair)
-            self._logger.info('Invalid Price order')
-        # today = OrderManager.clock.new_date
-        # if due_date <= today:
-        #     raise InvalidDueDate(due_date)
-        function(*args)
 
 
 class OrderManager(object):
 
     def __init__(self, _id):
+
         '''
         This class handles all operations related to orders.
         Using current strategy's portfolio status, the  order manager
@@ -39,87 +25,120 @@ class OrderManager(object):
 
         Parameters:
         ----------
+            _order_router: OrderRouter
+            _strategy: Dto strategy
+            _looger: Logger
+            _context : StrategyContext
+            _order_adapter: OrderAdapter
+            _open_orders: [] List of Orders opened and scheduled
+            _new_orders: Orders placed, ready to be validated and sent to the
+            OrderScheduler
 
         Attributes:
         ----------
         order_router: order router client
+        nested structure:
+        
+        
+        pair:
+             open_orders:
+                    id (interno)
+
+                    placed date
+                    amount
+                    type
+
+        
+        positions:
+            pair:
+                aggregated: [position]
 
         '''
+        self._counter = 0
         self.order_router = OrderRouter(_id)
-        self._orders = []
+        self._open_orders = []
+        self._new_orders = []
+        self._strategy = None
         self._logger = None
         self._context = None
         self._order_adapter = OrderAdapter()
+        self._canceled_orders = []
 
     def get_open_orders(self):
-        '''
-        TODO: define order_router return and how
-        data will be showed to devs
-        '''
-        return self._context._open_orders
+        return self._open_orders
 
     def cancel_all_open_orders(self):
-        self.perf_tracker.get_portfolio()
-        self.order_router.cancel_orders()
+        self._canceled_orders  = [] # Avoid cancel same order if cancel_pair_orders was used
+        self._canceled_orders = self._open_orders
+        self._open_orders = []
+       
 
     def cancel_pair_orders(self, pair):
-        if pair in self.pairs:
-            self.order_router.cancel_pair_orders(self.strategy.id, pair.name)
-            raise InvalidPairOrder(pair)
+        if pair not in self._strategy.traded_pairs:
+            self._logger.error('TRADED PAIR NOT IN LIST: {}'.format(pair))
 
-    #@validate_params
+        cancel_orders = [order for order in self._open_orders if order.symbol == pair]
+        for order in cancel_orders:
+            if order not in self._canceled_orders:
+                self._canceled_orders.append(order)
+
+       
     def limit_order(self, pair, amount, price, due_date=None):
         due_date = due_date or ''
-        if price > self._context.portfolio.value:
-            self._logger.info('NOT ENOUGH CASH TO TRADE ORDER: {}, {}, {} '.format('LIMIT ORDER', pair, price))
-            raise InvalidPriceOrder(price)
+        if pair not in self._strategy.traded_pairs:
+            # log error and return
+            self._logger.error('TRADED PAIR NOT IN LIST: {}'.format(pair))
+            return
+        self._new_orders.append(LimitOrder(pair, amount, price, self._counter))
+        self._counter += 1
 
-        limit_order = dict(order_type='LimitOrder', order_id='',
-                           symbol=pair, limit_price= float(price),
-                           stop_price= 0.0,
-                           amount = float(amount))
-        self._orders.append(limit_order)
-        # ORDER_KEYS = pub order_type: String,
-        # pub order_id: String,
-        # pub amount: f32,
-        # pub symbol: String,
-        # pub date: String,
-        # pub limit_price: f32,
-        # pub stop_price: f32,
 
-        # self.log.write('LIMIT ORDER: ' + pair.name + '  DATE: ' + due_date)
-
-        #self.order_router.limit_order(self.strategy.id, pair, price, due_date)
-
-    # @validate_params
     def stop_order(self, pair, amount, price, due_date=None):
-        stop_order = dict(order_type='StopOrder', order_id='',
-                           symbol=pair, limit_price= 0.0,
-                           stop_price= float(price),
-                           amount= float(amount))
-        self._orders.append(stop_order)
+        due_date = due_date or ''
+        if pair not in self._strategy.traded_pairs:
+            self._logger.error('TRADED PAIR NOT IN LIST: {}'.format(pair))
+        else:
+            self._new_orders.append(StopOrder(pair, amount, price, self._counter))
+            self._counter += 1
 
-    def market_order(self, pair, amount):
-        market_order = dict(order_type='MarketOrder', order_id='',
-                           symbol=pair, limit_price= 0.0,
-                           stop_price= 0.0,
-                           amount= float(amount))
-        self._orders.append(market_order)
+    def market_order(self, pair, amount, due_date=None):
+        due_date = due_date or ''
+        if pair not in self._strategy.traded_pairs:
+            self._logger.error('TRADED PAIR NOT IN LIST: {}'.format(pair))
+        else:
+            self._new_orders.append(MarketOrder(pair, amount, self._counter))
+            self._counter += 1
 
     def _publish_orders(self):
-        # cash = self._context.portfolio.value
-        # amount = sum([x['price'] if x['type'] ==
-        #               'LimitOrder' else 0 for x in self._orders])
+        if not all([x.is_valid(self._context.portfolio) for x in self._new_orders]):
+            invalid_orders = self._get_invalid_orders()
+            self._notify_invalid_orders(invalid_orders)
+        orders = self._order_adapter.get_order_messsage(self._new_orders, self._canceled_orders)
+        self._order_router.publish_orders(orders or "[]") 
+        [self._open_orders.append(x) for x in self._new_orders]
+        self._new_orders = []
+        self._canceled_orders = []
 
-        # if cash > amount:
-            # publish orders
-        if self._orders:
-            self._logger.info('ORDERS PLACED: ' + json.dumps(self._orders))
-            # clone = self._context.portfolio._asdict()
-            # clone['value'] = int(cash) - amount
-            # self._context.portfolio = Portfolio(**clone)
 
-        # self.order_router.publish_orders(self._orders)
-        msg = self._order_adapter.get_order_messsage(self._orders)
-        self.order_router.publish_orders(msg)
-        self._orders = []
+    def _get_invalid_orders(self):
+        invalid_orders = []
+        for pos, order in enumerate(self._new_orders):
+            if not order.is_valid(self._context.portfolio):
+                invalid_orders.append(str(order))
+                del self._new_orders[pos]
+        return invalid_orders
+
+    def _update_open_orders(self, filled_orders):
+        filled_orders_id = [x['order_id'] for x in filled_orders]
+        for pos, order in enumerate(self._open_orders):
+            if order.order_id in filled_orders_id:
+                del self._open_orders[pos]
+
+    def _notify_invalid_orders(self, invalid_orders):
+        pass
+
+    def __repr__(self):
+        return 'OrderManager'
+
+    def __dict__(self):
+        return 'OrderManager'
