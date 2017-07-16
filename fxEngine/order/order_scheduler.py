@@ -1,4 +1,6 @@
 import json
+from fxEngine.utils.mb_connector import MbConnector
+
 
 class Observer(object):
 
@@ -10,9 +12,9 @@ class Observer(object):
 class OrderScheduler(Observer):
     Q_orders = 'Q_orders_published'
 
-    def __init__(self, order_manager,mb_connection):
+    def __init__(self, order_manager,mb_connection=None):
         self.order_manager = order_manager
-        self.mb_connection = mb_connection
+        self.mb_connection = mb_connection or MbConnector.get_connection()
         self.queue = self.Q_orders + order_manager._strategy.id
 
     def update(self):

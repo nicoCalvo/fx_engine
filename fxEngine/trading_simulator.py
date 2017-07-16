@@ -1,6 +1,3 @@
-# import pyximport
-# pyximport.install()
-# from fxEngine.data.pair import Pair
 from fxEngine.strategy.strategy_compiler import StrategyCompiler
 from fxEngine.strategy.api_strategy import ApiStrategy
 from fxEngine.utils.exceptions import (
@@ -14,6 +11,7 @@ from fxEngine.data.mb_data_retriever import DataRetriever
 from simulation_manager import SimulationManager
 from fxEngine.clock.clock import FactoryClock
 from fxEngine.data.data_api import DataAPI
+from fxEngine.order.order_scheduler import OrderScheduler
 
 
 class TradingSimulator(object):
@@ -56,34 +54,29 @@ class TradingSimulator(object):
         self.__register_strategy()
         try:
             data_portal = self._prepare_data_portal()
-        except:
+        except:l
             return 0
         clock = FactoryClock.get_clock(clock_type, data_portal)
         self.api_strategy.set_internal_variables(clock, data_portal)
-        '''
-        intialize variables with params and check ig already instatiated objects
-        has reference inside the compiled code
-        '''
         data_api = DataAPI(data_portal=data_portal,
                            traded_pairs=self.traded_pairs)
         self.api_strategy.data_api = data_api
-
+        order_scheduler = OrderScheduler(self.api_strategy.get_order_manager())
+        data_portal.register_observer(order_scheduler)
         scheduler = self.api_strategy.get_scheduler()
         simulation_manager = SimulationManager(
             clock, self.api_strategy, scheduler)
         simulation_manager.simulate()
+
+
 
     def _prepare_data_portal(self):
         perf_tracker = PerformanceTracker(strategy=self.api_strategy)
         _id = self.api_strategy.dto_strategy.id
         data_portal = DataPortal(
             ingester=DataRetriever(_id), pairs=self.traded_pairs)
-        # data_portal = DataPortal(
-            # ingester=DemoLoader(), pairs=self.traded_pairs)
         data_portal.register_observer(perf_tracker)
         data_portal.ingest()
-
-
         return data_portal
 
     def __register_strategy(self):

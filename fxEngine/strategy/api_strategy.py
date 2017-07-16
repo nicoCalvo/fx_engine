@@ -90,3 +90,6 @@ class ApiStrategy(object):
         self.strategy['order']._context = self.context
         self.strategy['order']._strategy = self.dto_strategy
         self.strategy['order']._order_adapter.data_portal= data_portal
+
+    def get_order_manager(self):
+        return self.strategy['order']
