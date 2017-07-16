@@ -12,7 +12,7 @@ class Observer(object):
 
 
 class OrderScheduler(Observer):
-    Q_orders = 'Q.fx_engine.filled_orders.st.'
+    Q_orders = 'Q.fx_engine.filled_orders.'
 
     def __init__(self, order_manager, mb_connection=None):
         self.order_manager = order_manager
