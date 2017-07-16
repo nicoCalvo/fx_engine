@@ -5,12 +5,13 @@ class TickerAdapter(object):
     UNSET_VALUE = -1
 
     def __init__(self):
-        self.ticker = ''
-        self.pairs = ''
-        self.values = ''
+        self.ticker = None
+        self.pairs = None
+        self.values = None
 
     # TODO convert numbers to decimal or something to avoid losing data
-    def get_ticker(self, ticker, pairs, values):
+    def get_ticker(self, ticker, pairs, values=None):
+        # pairs must be list instance!
         self.ticker = ticker
         self.pairs = pairs
         self.values = values
@@ -35,7 +36,7 @@ class TickerAdapter(object):
         #     ticker[self.pairs[0]].pop
         # self.ticker = [x for x in self.ticker if x > self.UNSET_VALUE]
 
-        if len(self.values) > 1:
+        if len(self.values) > 1 :
             return self._single_pair_many_values()
         return self._single_pair_single_value()
 
@@ -62,7 +63,7 @@ class TickerAdapter(object):
         '''
         # TODO: Check if this poor workaround fits and if amount is always int
         # IMPLICIT CASTING SEEMS TO SOLVE ANY CAST ISSUE. BUT IT CAN FAIL
-        return self.ticker[self.pairs[0]][self.values[0]]
+        return [x for x in self.ticker if x['symbol'] == self.pairs[0]][0][self.values[0]]
 
     def _single_pair_many_values(self):
         '''
@@ -70,8 +71,9 @@ class TickerAdapter(object):
          and whose values are scalar values for this asset for each field
         '''
         ticker = []
+        pair =[x for x in self.ticker if x['symbol'] == self.pairs[0]][0]
         for val in self.values:
-            ticker.append(self.ticker[self.pairs[0]][val])
+            ticker.append(pair[val])
         return pd.Series(ticker, index=self.values)
 
     def _many_pairs_many_values(self):
@@ -80,14 +82,18 @@ class TickerAdapter(object):
         The columns are the requested fields,
         filled with the scalar values for each asset for each field
         '''
+
         _ticker_list = []
         for pair in self.pairs:
             tick = []
-            pair_values = self.ticker[pair]
+            pair_values = [x for x in self.ticker if x['symbol'] == pair][0]
             for val in self.values:
                 tick.append(pair_values[val])
             _ticker_list.append(tick)
+
         return pd.DataFrame(_ticker_list, index=self.pairs, columns=self.values)
+
+
 
     def _many_pairs_single_value(self):
         '''
@@ -96,8 +102,6 @@ class TickerAdapter(object):
         '''
         values = []
         for pair in self.pairs:
-            values.append(self.ticker[pair][self.values[0]])
-        # for pos, tick in enumerate(self.ticker):
-        #     val = [x for x in self.ticker[pos] if x > - self.UNSET_VALUE]
-        #     values.append(val[0])
+            pair_values = [x for x in self.ticker if x['symbol'] == pair][0]
+            values.append(pair_values[self.values[0]])
         return pd.Series(values, index=self.pairs)

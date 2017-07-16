@@ -3,7 +3,8 @@ from .exceptions import InvalidPairError, InvalidPairValueError
 
 class TickerFilter(object):
     UNSET_VALUE = -1
-
+    _allowed_values = ['bid', 'ask', 'medium']
+    
     def __init__(self, traded_pairs):
         '''
         Filters the raw ticket as it comes from dataportal and parses it
@@ -19,7 +20,6 @@ class TickerFilter(object):
         self.filtered_values = ''
         self.filtered_pairs = ''
         self.traded_pairs = traded_pairs
-        self._allowed_values = ['bid', 'ask', 'medium']
 
     def _filter_pairs(self):
         self._validate_filter_pairs()

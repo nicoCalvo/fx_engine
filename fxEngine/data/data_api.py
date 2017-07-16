@@ -71,7 +71,7 @@ class DataAPI(object):
             pairs = self._set_pairs(pairs)
             values = self._set_values(values)
             tick = self._data_portal.current_tick
-            tick = self._ticker_filter.filter(tick, pairs, values)
+            # tick = self._ticker_filter.filter(tick, pairs, values)
             tick = self._ticker_adapter.get_ticker(tick, pairs, values)
         except Exception, e:
             pass
@@ -86,6 +86,7 @@ class DataAPI(object):
 
     def _set_values(self, values):
         if isinstance(values, list):
+            values = list(filter(lambda x: x in self._ticker_filter._allowed_values, values))
             return values
         if not values:
             return self._ticker_filter._allowed_values
