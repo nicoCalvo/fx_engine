@@ -10,7 +10,7 @@ class Observer(object):
 
 
 class OrderScheduler(Observer):
-    Q_orders = 'Q_orders_published_'
+    Q_orders = 'Q.fx_engine.filled_orders.st.'
 
     def __init__(self, order_manager,mb_connection=None):
         self.order_manager = order_manager
