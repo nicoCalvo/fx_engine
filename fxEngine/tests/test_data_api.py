@@ -5,6 +5,10 @@ from fxEngine.data.ticker_filter import TickerFilter
 import unittest
 import pandas as pd
 import mock
+from datetime import (
+    datetime,
+    timedelta)
+
 
 
 class MockDataPortal(mock.Mock):
@@ -28,6 +32,7 @@ class MockDataPortal(mock.Mock):
     def get_tick_date(self):
         return datetime.strptime(self.current_tick[0]['time'],
                                  '%Y/%m/%d %H:%M:%S')
+
 
 
 class TestDataAPI(unittest.TestCase):
@@ -101,3 +106,4 @@ class TestDataAPI(unittest.TestCase):
         self.assertTrue(pairs[0] in value)
         self.assertEquals(len(value), 1)
         self.assertEquals(len(value[pairs[0]]), 2)
+

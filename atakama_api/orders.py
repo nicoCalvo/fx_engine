@@ -55,7 +55,7 @@ class OrderManager(object):
 
         '''
         self._counter = 0
-        self.order_router = OrderRouter(_id)
+        self._order_router = OrderRouter(_id)
         self._open_orders = []
         self._new_orders = []
         self._strategy = None
@@ -86,7 +86,6 @@ class OrderManager(object):
     def limit_order(self, pair, amount, price, due_date=None):
         due_date = due_date or ''
         if pair not in self._strategy.traded_pairs:
-            # log error and return
             self._logger.error('TRADED PAIR NOT IN LIST: {}'.format(pair))
             return
         self._new_orders.append(LimitOrder(pair, amount, price, self._counter))

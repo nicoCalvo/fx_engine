@@ -5,6 +5,7 @@ from fxEngine.utils.exceptions import (
     InvalidCapitalBase
 )
 from data.data_portal import DataPortal
+# from fxEngine.tests.test_data_api import MockDataPortal as DataPortal
 from fxEngine.performance.performance_tracker import PerformanceTracker
 from fxEngine.strategy.registration import StrategyRegistration
 from fxEngine.data.mb_data_retriever import DataRetriever
@@ -54,7 +55,7 @@ class TradingSimulator(object):
         self.__register_strategy()
         try:
             data_portal = self._prepare_data_portal()
-        except:l
+        except:
             return 0
         clock = FactoryClock.get_clock(clock_type, data_portal)
         self.api_strategy.set_internal_variables(clock, data_portal)
