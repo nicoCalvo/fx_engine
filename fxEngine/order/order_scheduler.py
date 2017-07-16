@@ -39,8 +39,7 @@ class OrderScheduler(Observer):
         if count == max_count and not body:
             channel = self.mb_connection.channel()
             channel.basic_publish(
-                exchange='E_timeout_exceptions', routing_key='',
-                body='UNABLE TO PERFORM INGEST ' + self.queue_ingest)
+                exchange='E_timeout_exceptions', routing_key='',body='FxEngine.OrderScheduler')
             raise RabbitConnectionError()
 
             raise RabbitConnectionError('Retrieving ingest: ' + self._id)
