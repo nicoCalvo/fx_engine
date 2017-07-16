@@ -7,9 +7,8 @@ class OrderRouter(object):
 
     def __init__(self, strategy_id):
         self.conn = MbConnector.get_connection()
-
         self.st_id = strategy_id
-        self.exchange = 'E_orders_strategy'
+        self.exchange = 'E_new_orders_strategy'
 
     def publish_orders(self, orders):
         channel = self.conn.channel()

@@ -10,7 +10,7 @@ class Observer(object):
 
 
 class OrderScheduler(Observer):
-    Q_orders = 'Q_orders_published'
+    Q_orders = 'Q_orders_published_'
 
     def __init__(self, order_manager,mb_connection=None):
         self.order_manager = order_manager
@@ -37,7 +37,7 @@ class OrderScheduler(Observer):
                 count += 1
 
         if count == max_count and not body:
-            channel = self.conn.channel()
+            channel = self.mb_connection.channel()
             channel.basic_publish(
                 exchange='E_timeout_exceptions', routing_key='',
                 body='UNABLE TO PERFORM INGEST ' + self.queue_ingest)
