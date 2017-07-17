@@ -8,7 +8,7 @@ Portfolio = namedtuple('Portfolio','cash')
 
 
 class TestMarketOrder(unittest.TestCase):
-	KEYS_REPR = ['order_id', 'limit_price', 'amount', 'stop_price', 'order_type']
+	KEYS_REPR = ['order_id', 'limit_price', 'amount', 'stop_price', 'order_type', 'symbol']
 
 	def setUp(self):
 		pass
