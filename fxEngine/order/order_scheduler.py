@@ -17,12 +17,13 @@ class OrderScheduler(Observer):
     def __init__(self, order_manager, mb_connection=None):
         self.order_manager = order_manager
         self.mb_connection = mb_connection or MbConnector.get_connection()
-        self.queue = self.Q_orders + order_manager._strategy.id
 
     def update(self):
         self._update_order_manager()
 
+
     def _get_orders(self):
+	queue = self.Q_orders + self.order_manager._strategy.id
         count = 0
         max_count = 10
         body = None
@@ -30,7 +31,7 @@ class OrderScheduler(Observer):
         while not body and count < max_count:
             try:
                 method_frame, header_frame, body = channel.basic_get(
-                    queue=self.queue_ingest, no_ack=True)
+                    queue=queue, no_ack=True)
             except:
                 channel = self.mb_connection.channel()
             if not body:

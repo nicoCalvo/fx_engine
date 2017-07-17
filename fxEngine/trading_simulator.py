@@ -62,8 +62,6 @@ class TradingSimulator(object):
         data_api = DataAPI(data_portal=data_portal,
                            traded_pairs=self.traded_pairs)
         self.api_strategy.data_api = data_api
-        order_scheduler = OrderScheduler(self.api_strategy.get_order_manager())
-        data_portal.register_observer(order_scheduler)
         scheduler = self.api_strategy.get_scheduler()
         simulation_manager = SimulationManager(
             clock, self.api_strategy, scheduler)
@@ -76,6 +74,8 @@ class TradingSimulator(object):
         _id = self.api_strategy.dto_strategy.id
         data_portal = DataPortal(
             ingester=DataRetriever(_id), pairs=self.traded_pairs)
+	order_scheduler = OrderScheduler(self.api_strategy.get_order_manager())
+	data_portal.register_observer(order_scheduler)
         data_portal.register_observer(perf_tracker)
         data_portal.ingest()
         return data_portal
