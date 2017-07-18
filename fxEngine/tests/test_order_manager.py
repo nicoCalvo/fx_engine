@@ -111,8 +111,18 @@ class TestOrderManager(unittest.TestCase):
     def test_cancel_pair_orders(self):
         self.order_manager._new_orders[:] = []
         self.order_manager.limit_order('USDEUR', 2, 3)
-        self.order_manager.limit_order('EURDKK', 555, 999)
+        self.order_manager.limit_order('EURDKK', 555, 100)
         self.order_manager._publish_orders()
         self.assertEquals(len(self.order_manager._open_orders), 2)
         self.order_manager.cancel_pair_orders('USDEUR')
         self.assertEquals(len(self.order_manager._canceled_orders), 1)
+
+    def test_invalid_order(self):
+        self.order_manager._open_orders = []
+        self.order_manager._new_orders = []
+        self.order_manager._rejected_orders = []
+        self.order_manager.market_order('USDEUR', 1200)
+        self.assertTrue(isinstance(self.order_manager._new_orders[0],
+                                   MarketOrder))
+        self.order_manager._publish_orders()
+        self.assertEquals(len(self.order_manager._rejected_orders), 1)

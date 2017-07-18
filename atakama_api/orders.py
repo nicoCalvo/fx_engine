@@ -12,11 +12,9 @@ from fxEngine.order.market_order import MarketOrder
 import json
 
 
-
 class OrderManager(object):
 
     def __init__(self, _id):
-
         '''
         This class handles all operations related to orders.
         Using current strategy's portfolio status, the  order manager
@@ -38,8 +36,8 @@ class OrderManager(object):
         ----------
         order_router: order router client
         nested structure:
-        
-        
+
+
         pair:
              open_orders:
                     id (interno)
@@ -48,7 +46,7 @@ class OrderManager(object):
                     amount
                     type
 
-        
+
         positions:
             pair:
                 aggregated: [position]
@@ -63,26 +61,26 @@ class OrderManager(object):
         self._context = None
         self._order_adapter = OrderAdapter()
         self._canceled_orders = []
+        self._rejected_orders = []
 
     def get_open_orders(self):
         return self._open_orders
 
     def cancel_all_open_orders(self):
-        self._canceled_orders  = [] # Avoid cancel same order if cancel_pair_orders was used
+        self._canceled_orders = []  # Avoid cancel same order if cancel_pair_orders was used
         self._canceled_orders = self._open_orders
         self._open_orders = []
-       
 
     def cancel_pair_orders(self, pair):
         if pair not in self._strategy.traded_pairs:
             self._logger.error('TRADED PAIR NOT IN LIST: {}'.format(pair))
 
-        cancel_orders = [order for order in self._open_orders if order.symbol == pair]
+        cancel_orders = [
+            order for order in self._open_orders if order.symbol == pair]
         for order in cancel_orders:
             if order not in self._canceled_orders:
                 self._canceled_orders.append(order)
 
-       
     def limit_order(self, pair, amount, price, due_date=None):
         due_date = due_date or ''
         if pair not in self._strategy.traded_pairs:
@@ -91,13 +89,13 @@ class OrderManager(object):
         self._new_orders.append(LimitOrder(pair, amount, price, self._counter))
         self._counter += 1
 
-
     def stop_order(self, pair, amount, price, due_date=None):
         due_date = due_date or ''
         if pair not in self._strategy.traded_pairs:
             self._logger.error('TRADED PAIR NOT IN LIST: {}'.format(pair))
         else:
-            self._new_orders.append(StopOrder(pair, amount, price, self._counter))
+            self._new_orders.append(
+                StopOrder(pair, amount, price, self._counter))
             self._counter += 1
 
     def market_order(self, pair, amount, due_date=None):
@@ -111,13 +109,14 @@ class OrderManager(object):
     def _publish_orders(self):
         if not all([x.is_valid(self._context.portfolio) for x in self._new_orders]):
             invalid_orders = self._get_invalid_orders()
+            self._rejected_orders += invalid_orders
             self._notify_invalid_orders(invalid_orders)
-        orders = self._order_adapter.get_order_messsage(self._new_orders, self._canceled_orders)
-        self._order_router.publish_orders(orders or "[]") 
+        orders = self._order_adapter.get_order_messsage(
+            self._new_orders, self._canceled_orders)
+        self._order_router.publish_orders(orders or "[]")
         [self._open_orders.append(x) for x in self._new_orders]
         self._new_orders = []
         self._canceled_orders = []
-
 
     def _get_invalid_orders(self):
         invalid_orders = []
@@ -135,6 +134,9 @@ class OrderManager(object):
 
     def _notify_invalid_orders(self, invalid_orders):
         pass
+
+    def get_rejected_orders(self):
+        return self._rejected_orders
 
     def __repr__(self):
         return 'OrderManager'

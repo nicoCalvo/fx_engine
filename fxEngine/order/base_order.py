@@ -18,15 +18,9 @@ class BaseOrder(object):
     def is_valid(self, portfolio):
         pass
 
-    # def can_sell(self, portfolio, amount):
-    #     for position in portfolio.positions:
-    #         if position.symbol === self.symbol:
-
-    #     Position = namedtuple(
-    # 'Position', 'position_id amount date_updated symbol value')
-
-    def _validate_price_amount(self):
-        return self.limit_price > 0 or self.stop_price > 0
+    def _validate_price_amount(self, portfolio):
+        return ((self.limit_price > 0 or self.stop_price > 0)
+                and self.amount <= portfolio.cash)
 
     def __repr__(self):
         return'{' + '"order_type": "{order_type}", "order_id": "{order_id}",\

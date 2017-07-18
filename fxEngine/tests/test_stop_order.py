@@ -37,5 +37,5 @@ class TestStopOrder(unittest.TestCase):
 		amount = 300
 		order_number = 0
 		stop_order = StopOrder(symbol, price, amount, order_number)
-		self.assertTrue(stop_order.is_valid(portfolio))
+		self.assertFalse(stop_order.is_valid(portfolio))
 	

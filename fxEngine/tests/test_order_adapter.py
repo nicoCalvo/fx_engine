@@ -44,11 +44,9 @@ class TestOrderAdapter(unittest.TestCase):
                             "amount": 3, "stop_price": 0.0,
                             "limit_price": 2,
                             "symbol":"USDEUR"}]
-                        
+        
         orders_msg = order_adapter.get_order_messsage(
             self.new_orders, canceled_orders)
-        import pdb
-        pdb.set_trace()
         orders_msg = json.loads(orders_msg)
         self.assertTrue(orders_msg['canceled_orders'])
         self.assertEquals(len(orders_msg['new_orders']), 2)
