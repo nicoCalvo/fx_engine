@@ -1,0 +1,27 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: fx-engine
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: fx-engine
+    spec:
+      containers:
+      - name: fx-engine
+        image: 908991866159.dkr.ecr.eu-west-1.amazonaws.com/fx-engine-py:0.1.0
+        env:
+        -
+          name: RABBIT_USERNAME
+          value: tonyg
+        -
+          name: RABBIT_PASSWORD
+          value: changeit
+        -
+          name: RABBIT_HOST
+          value: 172.31.40.34
+        -
+          name: RABBIT_PORT
+          value: "5672"
