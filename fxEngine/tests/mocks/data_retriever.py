@@ -12,3 +12,70 @@ class MockDataRetriever(DataRetriever):
 
     def get_bundle(self):
         return self.bundle_demo
+
+
+    def current_tick(self):
+	    return 	'''{
+	   "portfolio":{
+	      "value":10000,
+	      "open_positions":[
+
+	      ]
+	   },
+	   "current_cash":10000,
+	   "tick":{
+	      "ticker":[
+	         {
+	            "ask":1.43291,
+	            "bid":1.43199,
+	            "medium":1.43245,
+	            "symbol":"USDEUR",
+	            "time":"2010/01/04 00:00:00"
+	         },
+	         {
+	            "ask":7.44185,
+	            "bid":7.44115,
+	            "medium":7.4415,
+	            "symbol":"EURDKK",
+	            "time":"2010/01/04 00:00:00"
+	         }
+	      ],
+	      "bar":[
+	         {
+	            "low_bid":1.42565,
+	            "high_ask":1.44591,
+	            "symbol":"USDEUR",
+	            "close_bid":1.44126,
+	            "high_bid":1.44554,
+	            "time":"2010/01/04 00:00:00",
+	            "open_bid":1.43199,
+	            "close_ask":1.44146,
+	            "open_ask":1.43291,
+	            "low_ask":1.42585
+	         },
+	         {
+	            "low_bid":7.43995,
+	            "high_ask":7.44235,
+	            "symbol":"EURDKK",
+	            "close_bid":7.44135,
+	            "high_bid":7.44175,
+	            "time":"2010/01/04 00:00:00",
+	            "open_bid":7.44115,
+	            "close_ask":7.44185,
+	            "open_ask":7.44185,
+	            "low_ask":7.44095
+	         }
+	      ]
+	   },
+	   "positions":{
+	      "open":[
+
+	      ],
+	      "aggregated":[
+
+	      ],
+	      "closed":[
+
+	      ]
+	   }
+	}'''

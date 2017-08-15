@@ -13,6 +13,8 @@ import json
 
 
 class OrderManager(object):
+    MAX_PLACE_ORDERS = 5
+    MAX_OPEN_ORDERS = 100
 
     def __init__(self, _id):
         '''
@@ -53,6 +55,7 @@ class OrderManager(object):
 
         '''
         self._counter = 0
+        self._counter_new_orders = 0
         self._order_router = OrderRouter(_id)
         self._open_orders = []
         self._new_orders = []
@@ -86,25 +89,44 @@ class OrderManager(object):
         if pair not in self._strategy.traded_pairs:
             self._logger.error('TRADED PAIR NOT IN LIST: {}'.format(pair))
             return
+        if self._counter_new_orders > self.MAX_PLACE_ORDERS:
+            self._logger('MAX PLACING ORDERS REACHED - UNABLE TO PROCESS ORDER : {order}'.format(
+                str(LimitOrder(pair, amount, price, self._counter))))
+            return
         self._new_orders.append(LimitOrder(pair, amount, price, self._counter))
         self._counter += 1
+        self._counter_new_orders += 1
 
     def stop_order(self, pair, amount, price, due_date=None):
         due_date = due_date or ''
         if pair not in self._strategy.traded_pairs:
             self._logger.error('TRADED PAIR NOT IN LIST: {}'.format(pair))
-        else:
-            self._new_orders.append(
-                StopOrder(pair, amount, price, self._counter))
-            self._counter += 1
+            return
+        if self._counter_new_orders > self.MAX_PLACE_ORDERS:
+            self._logger('MAX PLACING ORDERS REACHED - UNABLE TO PROCESS ORDER : {order}'.format(
+                str(StopOrder(pair, amount, price, self._counter))))
+            return
+        self._new_orders.append(
+            StopOrder(pair, amount, price, self._counter))
+        self._counter += 1
+        self._counter_new_orders += 1
 
     def market_order(self, pair, amount, due_date=None):
         due_date = due_date or ''
         if pair not in self._strategy.traded_pairs:
             self._logger.error('TRADED PAIR NOT IN LIST: {}'.format(pair))
+            return
+        if self._counter_new_orders > self.MAX_PLACE_ORDERS:
+            self._logger('MAX PLACING ORDERS REACHED - UNABLE TO PROCESS ORDER : {order}'.format(
+                str(MarketOrder(pair, amount, self._counter))))
+            return
         else:
             self._new_orders.append(MarketOrder(pair, amount, self._counter))
             self._counter += 1
+            self._counter_new_orders += 1
+
+    def order_counter_position(self, pair, amount):
+        self._new_orders.append(MarketOrder(pair, amount, self._counter))
 
     def _publish_orders(self):
         if not all([x.is_valid(self._context.portfolio) for x in self._new_orders]):

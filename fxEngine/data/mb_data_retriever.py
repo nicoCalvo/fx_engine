@@ -5,17 +5,17 @@ import json
 import pandas as pd
 
 
+
+
 class DataRetriever(object):
     """docstring for DataRtriever"""
 
     def __init__(self, _id):
         self._id = str(_id)
         self.conn = MbConnector.get_connection()
-        self.queue_tick = 'Q_tick_strategy_' + str(_id)
-        self.queue_ingest = 'Q_ingest_strategy_' + str(_id)
-        self.columns = ['open_bid', 'open_ask','low_bid',
-                        'low_ask', 'high_bid', 'high_ask',
-                        'close_bid', 'close_ask' ]
+        self.queue_tick = 'Q_perfmon_strategy_' + str(_id)
+        self.queue_ingest = 'Q_ingest2_strategy_' + str(_id)
+        
 
     def current_tick(self):
         body = None
@@ -35,33 +35,15 @@ class DataRetriever(object):
         if count == max_count and not body:
             raise RabbitConnectionError('Retrieving tick: ' + self._id)
         channel.close()
+        if not isinstance(body, dict):
+            body = json.loads(body)
         return body
 
 
     def ingest(self):
-        bundle = self.get_bundle()
-        history = json.loads(bundle)
-        pairs = [x['symbol'] for x in history[0]]
+        return json.loads(self.get_bundle())
+       
 
-        pairs_data = {}
-
-        for pair in pairs:
-            pairs_data[pair] = []
-        dates = []
-
-        for bar in history:
-            dates.append(bar[0]['time'])
-            for pair_bar in bar:
-                data = [pair_bar['open_bid'], pair_bar['open_ask'],
-                        pair_bar['low_bid'], pair_bar['low_ask'],
-                        pair_bar['high_bid'], pair_bar['high_ask'],
-                        pair_bar['close_bid'], pair_bar['close_ask']]
-                pairs_data[pair_bar['symbol']].append(data)
-
-        pn = pd.Panel(major_axis=dates, minor_axis=self.columns)
-        for symbol, data_frame in pairs_data.iteritems():
-            pn[symbol] = pd.DataFrame(data_frame, index=dates, columns=self.columns)
-        return pn
 
 
     def get_bundle(self):

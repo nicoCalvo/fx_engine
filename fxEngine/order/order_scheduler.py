@@ -21,9 +21,8 @@ class OrderScheduler(Observer):
     def update(self):
         self._update_order_manager()
 
-
     def _get_orders(self):
-	queue = self.Q_orders + self.order_manager._strategy.id
+        queue = self.Q_orders + self.order_manager._strategy.id
         count = 0
         max_count = 10
         body = None

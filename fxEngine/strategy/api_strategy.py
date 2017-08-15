@@ -36,7 +36,7 @@ class ApiStrategy(object):
         self._compiler = compiler
         self.dto_strategy = dto_strategy
         self.strategy = ''
-        self.context = StrategyContext(self._get_base_portfolio())
+        self.context = StrategyContext()
         self._scheduler = None
         self.data_api = None
         self._handle_data = None
@@ -44,12 +44,6 @@ class ApiStrategy(object):
         self._before_new_day = None
         self._before_new_week = None
         self._before_new_month = None
-
-    def _get_base_portfolio(self):
-        return Portfolio(value=self.dto_strategy.capital_base, returns=0,
-                         return_std=0, beta=0, sharpe=0,std=0,
-                         cumulative_returns=0, positions=[],
-                         max_drawdown=0)
 
 
     def compile_strategy(self):

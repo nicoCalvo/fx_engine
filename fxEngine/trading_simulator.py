@@ -5,6 +5,7 @@ from fxEngine.utils.exceptions import (
     InvalidCapitalBase
 )
 from data.data_portal import DataPortal
+import json
 # from fxEngine.tests.test_data_api import MockDataPortal as DataPortal
 from fxEngine.performance.performance_tracker import PerformanceTracker
 from fxEngine.strategy.registration import StrategyRegistration
@@ -39,7 +40,6 @@ class TradingSimulator(object):
 
     def _validate_pairs(self):
         self.traded_pairs = list(set(self.traded_pairs))
-        
 
     def _load_strategy(self):
         try:
@@ -67,17 +67,15 @@ class TradingSimulator(object):
             clock, self.api_strategy, scheduler)
         simulation_manager.simulate()
 
-
-
     def _prepare_data_portal(self):
-        perf_tracker = PerformanceTracker(strategy=self.api_strategy)
         _id = self.api_strategy.dto_strategy.id
         data_portal = DataPortal(
             ingester=DataRetriever(_id), pairs=self.traded_pairs)
-	order_scheduler = OrderScheduler(self.api_strategy.get_order_manager())
-	data_portal.register_observer(order_scheduler)
-        data_portal.register_observer(perf_tracker)
+        order_scheduler = OrderScheduler(self.api_strategy.get_order_manager())
+        # data_portal.register_observer(order_scheduler)
+        data_portal.register_observer(self.api_strategy.context)
         data_portal.ingest()
+
         return data_portal
 
     def __register_strategy(self):

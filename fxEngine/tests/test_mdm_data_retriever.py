@@ -11,10 +11,10 @@ class MdmRetriever(unittest.TestCase):
     def test_load_bundle(self):
         data_retriever = MockDataRetriever('test')
         data_bundle = data_retriever.ingest()
-        self.assertEquals(data_bundle.EURDKK.ix[0].name, '2012/06/29 00:00:00')
-        self.assertEquals(data_bundle.USDEUR.ix[0].name, '2012/06/29 00:00:00')
-        self.assertEquals(data_bundle.EURDKK.ix[-1].name, '2012/02/13 00:00:00')
-        self.assertEquals(data_bundle.USDEUR.ix[-1].name, '2012/02/13 00:00:00')
+        self.assertEquals(data_bundle[0][0]['time'], '2012/06/29 00:00:00')
+        self.assertEquals(data_bundle[0][1]['time'], '2012/06/29 00:00:00')
+        self.assertEquals(data_bundle[-1][0]['time'], '2012/02/13 00:00:00')
+        self.assertEquals(data_bundle[-1][1]['time'], '2012/02/13 00:00:00')
 
 
 
