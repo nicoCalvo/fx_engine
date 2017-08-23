@@ -2,7 +2,6 @@ from ..utils.mb_connector import MbConnector
 from ..utils.exceptions import RabbitConnectionError
 import time
 import json
-import pandas as pd
 
 
 
@@ -33,8 +32,10 @@ class DataRetriever(object):
                 count += 1
                 time.sleep(1)
         if count == max_count and not body:
+            print 'TICKER NOT FOUND'
             raise RabbitConnectionError('Retrieving tick: ' + self._id)
         channel.close()
+        print 'TICKER FOUND!'
         if not isinstance(body, dict):
             body = json.loads(body)
         return body
@@ -51,6 +52,7 @@ class DataRetriever(object):
         max_count = 20
         body = None
         channel = self.conn.channel()
+        print 'INGESTING'
         while not body and count < max_count:
             try:
                 method_frame, header_frame, body = channel.basic_get(
@@ -62,6 +64,7 @@ class DataRetriever(object):
                 count += 1
 
         if count == max_count and not body:
+            print "DIDNT GET ANY MESSAGE!"
             channel = self.conn.channel()
             channel.basic_publish(
                 exchange='E_timeout_exceptions', routing_key='',

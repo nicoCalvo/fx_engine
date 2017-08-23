@@ -1,3 +1,4 @@
+
 from fxEngine.order.order_router_client import OrderRouter
 from fxEngine.order.order_adapter import OrderAdapter
 from fxEngine.data.dto import Portfolio
@@ -129,12 +130,14 @@ class OrderManager(object):
         self._new_orders.append(MarketOrder(pair, amount, self._counter))
 
     def _publish_orders(self):
+
         if not all([x.is_valid(self._context.portfolio) for x in self._new_orders]):
             invalid_orders = self._get_invalid_orders()
             self._rejected_orders += invalid_orders
             self._notify_invalid_orders(invalid_orders)
         orders = self._order_adapter.get_order_messsage(
             self._new_orders, self._canceled_orders)
+        print 'PUBLISHING ORDERS: {orders} - Exchange: {ex}'.format(orders=orders, ex='E_new_orders_strategy')
         self._order_router.publish_orders(orders or "[]")
         [self._open_orders.append(x) for x in self._new_orders]
         self._new_orders = []
