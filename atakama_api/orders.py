@@ -1,16 +1,12 @@
-
+import logging
 from fxEngine.order.order_router_client import OrderRouter
 from fxEngine.order.order_adapter import OrderAdapter
-from fxEngine.data.dto import Portfolio
-from fxEngine.order.exceptions import (
-    InvalidPairOrder,
-    InvalidDueDate,
-    InvalidPriceOrder
-)
 from fxEngine.order.limit_order import LimitOrder
 from fxEngine.order.stop_order import StopOrder
 from fxEngine.order.market_order import MarketOrder
-import json
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 class OrderManager(object):
@@ -137,7 +133,8 @@ class OrderManager(object):
             self._notify_invalid_orders(invalid_orders)
         orders = self._order_adapter.get_order_messsage(
             self._new_orders, self._canceled_orders)
-        print 'PUBLISHING ORDERS: {orders} - Exchange: {ex}'.format(orders=orders, ex='E_new_orders_strategy')
+        LOGGER.info('PUBLISHING ORDERS: {orders} - Exchange: {ex}'.format(
+            orders=orders, ex='E_new_orders_strategy'))
         self._order_router.publish_orders(orders or "[]")
         [self._open_orders.append(x) for x in self._new_orders]
         self._new_orders = []

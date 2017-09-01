@@ -28,6 +28,7 @@ logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
 
 
 if __name__ == "__main__":
+    LOGGER.info('##### STARGING FXENGINE ##### ')
     host = os.environ.get('RABBIT_HOST', '127.0.0.1')
     port = int(os.environ.get('RABBIT_PORT', 5672))
     virtual_host = os.environ.get('RABBIT_VHOST', "/")
@@ -44,12 +45,15 @@ if __name__ == "__main__":
     def process_strategy(unused_channel, basic_deliver, properties, body):
         LOGGER.info('INCOMING MESSAGE: ' + body)
         message = json.loads(body)
+        if 'debug_log' in message and message['debug_log']:
+            logging.getLogger().setLevel(logging.DEBUG)
+
         dto_strategy = DTOStrategy(**message['code'])
         trading_simulator = TradingSimulator(dto_strategy, message)
-        # trading_simulator.run_simulation('eternal')
-        d = threading.Thread(target=trading_simulator.run_simulation, args=['eternal'])
-        d.setDaemon(True)
-        d.start()
+        trading_simulator.run_simulation('eternal')
+        # d = threading.Thread(target=trading_simulator.run_simulation, args=['eternal'])
+        # d.setDaemon(True)
+        # d.start()
     try:
         conn = pika.BlockingConnection(con_params)
         channel = conn.channel()

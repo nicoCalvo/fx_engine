@@ -1,6 +1,10 @@
 from atakama_api.utils import MbConnector
 import json
 from performance.performance_tracker import RabbitConnectionError
+import logging
+
+LOGGER = logging.getLogger(__name__)
+
 
 class SimulationManager(object):
 
@@ -25,6 +29,7 @@ class SimulationManager(object):
         except RabbitConnectionError:
             conn = MbConnector.get_connection()
             channel = conn.channel()
+            LOGGER.info('UNABLE TO CONNECT TO RABBIT')
             msg = dict(message='RUNTIME ERROR: '+ ' - ' + 'INTERNAL ERROR. PLEASE TRY AGAIN', simulation_date='1901-01-01')
             channel.basic_publish(exchange='E_standard_log',
                                   routing_key=self.strategy.dto_strategy.id,
@@ -32,6 +37,7 @@ class SimulationManager(object):
             pass
 
         except Exception, e:
+            LOGGER.info('########################### ERROR: {}  ###################'.format(str(e)))
             print '\n\n\n'
             print 'se rompio todo: ' + str(e)
             print '\n\n\n'

@@ -44,8 +44,10 @@ class AtakamaLogger(Logger):
     def __init__(self, _id):
         self.conn = MbConnector.get_connection()
         self.strategy_id = _id
+        self._counter = 0
 
     def info(self, msg):
+        self._counter += 1
         msg = str(msg)
         channel = self.conn.channel()
         date = self.clock.new_date.strftime('%Y-%m-%d %H:%M:%S')if isinstance(self.clock.new_date, datetime) else '1901-01-01' #.strftime('%Y-%m-%d %H:%M:%S')
@@ -53,7 +55,10 @@ class AtakamaLogger(Logger):
         if len(msg) > self.MAX_LENGTH_LOG:
             msg = msg[:self.MAX_LENGTH_LOG]
             try:
-                msg = dict(simulation_date=date, message=self.WARNING_SHRINK_MESSAGE)
+                msg = dict(simulation_date=date,
+                           message=self.WARNING_SHRINK_MESSAGE + msg,
+                           counter=self._counter,
+                           strategy_id=str(self.strategy_id))
                 channel.basic_publish(exchange=self.E_ST_LOG,
                                       routing_key=str(self.strategy_id),
                                       body=json.dumps(msg))
@@ -71,6 +76,7 @@ class AtakamaLogger(Logger):
             print 'SE ROMPIOOOO  '+ str(e)
 
     def _error(self, msg):
+        self._counter += 1
         msg = str(msg)
         channel = self.conn.channel()
         date = self.clock.new_date.strftime('%Y-%m-%d %H:%M:%S')if isinstance(self.clock.new_date, datetime) else '1901-01-01' #.strftime('%Y-%m-%d %H:%M:%S')
@@ -78,7 +84,7 @@ class AtakamaLogger(Logger):
         if len(msg) > self.MAX_LENGTH_LOG:
             msg = msg[:self.MAX_LENGTH_LOG]
             try:
-                msg = dict(simulation_date=date, message=self.WARNING_SHRINK_MESSAGE)
+                msg = dict(simulation_date=date, message=self.WARNING_SHRINK_MESSAGE, counter=self._counter)
                 channel.basic_publish(exchange=self.E_ST_LOG,
                                       routing_key=str(self.strategy_id),
                                       body=json.dumps(msg))

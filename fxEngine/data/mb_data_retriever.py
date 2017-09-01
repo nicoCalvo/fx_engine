@@ -2,8 +2,9 @@ from ..utils.mb_connector import MbConnector
 from ..utils.exceptions import RabbitConnectionError
 import time
 import json
+import logging
 
-
+LOGGER = logging.getLogger(__name__)
 
 
 class DataRetriever(object):
@@ -12,11 +13,11 @@ class DataRetriever(object):
     def __init__(self, _id):
         self._id = str(_id)
         self.conn = MbConnector.get_connection()
-        self.queue_tick = 'Q_perfmon_strategy_' + str(_id)
+        self.queue_tick = 'Q_portfolio_strategy_' + str(_id)
         self.queue_ingest = 'Q_ingest2_strategy_' + str(_id)
-        
 
     def current_tick(self):
+        LOGGER.info('CONSUMING TICK')
         body = None
         count = 0
         max_count = 20
@@ -32,22 +33,20 @@ class DataRetriever(object):
                 count += 1
                 time.sleep(1)
         if count == max_count and not body:
-            print 'TICKER NOT FOUND'
+            LOGGER.info('TICKER NOT FOUND')
             raise RabbitConnectionError('Retrieving tick: ' + self._id)
         channel.close()
-        print 'TICKER FOUND!'
+        LOGGER.info('TICKER OK')
+        LOGGER.info(body)
         if not isinstance(body, dict):
             body = json.loads(body)
         return body
 
-
     def ingest(self):
         return json.loads(self.get_bundle())
-       
-
-
 
     def get_bundle(self):
+        LOGGER.info('CONSUMING INGEST')
         count = 0
         max_count = 20
         body = None
@@ -64,7 +63,7 @@ class DataRetriever(object):
                 count += 1
 
         if count == max_count and not body:
-            print "DIDNT GET ANY MESSAGE!"
+            LOGGER.info('DIDNT GET ANY MESSAGE!')
             channel = self.conn.channel()
             channel.basic_publish(
                 exchange='E_timeout_exceptions', routing_key='',
@@ -72,4 +71,5 @@ class DataRetriever(object):
             raise RabbitConnectionError()
 
             raise RabbitConnectionError('Retrieving ingest: ' + self._id)
+        LOGGER.info('INGEST OK')
         return body
