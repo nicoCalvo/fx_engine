@@ -14,11 +14,10 @@ $ pip install -r requirements.txt
 ```sh
 $ python -m unittest discover -v
 ```
-Desde la raiz del proyecto
 
 
 ## Project start
 
 ```sh
-$ ./flighthistd start
+python main.py
 ```
